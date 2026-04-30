@@ -16,6 +16,31 @@ MonoBehaviour:
   expeditionName: Shadow Ruins
   description: 
   durationSeconds: 10
+  backgroundSprite: {fileID: 0}
+  sceneTintColor: {r: 0.18, g: 0.15, b: 0.28, a: 1}
+  recommendedPower: 120
+  enemies:
+  - enemyId: shadow_wisp
+    enemyName: Shadow Wisp
+    element: 3
+    maxHealth: 55
+    attack: 13
+    defense: 2
+    sprite: {fileID: 0}
+  - enemyId: ruin_knight
+    enemyName: Ruin Knight
+    element: 3
+    maxHealth: 85
+    attack: 16
+    defense: 5
+    sprite: {fileID: 0}
+  - enemyId: dusk_golem
+    enemyName: Dusk Golem
+    element: 3
+    maxHealth: 120
+    attack: 20
+    defense: 8
+    sprite: {fileID: 0}
   baseCoin: 1000
   baseFood: 300
   baseCrystal: 20

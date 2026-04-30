@@ -176,8 +176,14 @@ namespace SpiritHatchers.Expedition
 
         public bool ClaimReward(PlayerExpeditionData activeExpedition, out ExpeditionReward reward)
         {
+            return ClaimReward(activeExpedition, out reward, out ExpeditionBattleResult battleResult);
+        }
+
+        public bool ClaimReward(PlayerExpeditionData activeExpedition, out ExpeditionReward reward, out ExpeditionBattleResult battleResult)
+        {
             FindReferencesIfNeeded();
             reward = new ExpeditionReward();
+            battleResult = new ExpeditionBattleResult();
 
             PlayerSaveData saveData = GetSaveData();
             if (saveData == null || activeExpedition == null)
@@ -207,17 +213,23 @@ namespace SpiritHatchers.Expedition
                 return false;
             }
 
-            reward = CalculateReward(expedition, creature);
+            battleResult = ResolveBattle(expedition, creature);
+            reward = CalculateReward(expedition, creature, battleResult);
 
             saveData.activeExpeditions.Remove(activeExpedition);
             resourceManager.AddResources(reward.coin, reward.food, reward.crystal, 0);
             SaveAndNotify();
 
-            Debug.Log($"Claimed {expedition.expeditionName}: {reward.coin} Coin, {reward.food} Food, {reward.crystal} Crystal.");
+            Debug.Log($"Claimed {expedition.expeditionName}: {battleResult.resultLabel}. {reward.coin} Coin, {reward.food} Food, {reward.crystal} Crystal.");
             return true;
         }
 
         public ExpeditionReward CalculateReward(ExpeditionData expedition, PlayerCreatureData creature)
+        {
+            return CalculateReward(expedition, creature, null);
+        }
+
+        public ExpeditionReward CalculateReward(ExpeditionData expedition, PlayerCreatureData creature, ExpeditionBattleResult battleResult)
         {
             ExpeditionReward reward = new ExpeditionReward();
 
@@ -235,12 +247,36 @@ namespace SpiritHatchers.Expedition
                 : CalculatePowerFallback(creatureStaticData, creature);
 
             int creatureLevel = Mathf.Max(1, creature.level);
+            float clearMultiplier = battleResult != null ? battleResult.rewardMultiplier : 1f;
 
-            reward.coin = expedition.baseCoin + creaturePower * 2;
-            reward.food = expedition.baseFood + creatureLevel * 5;
-            reward.crystal = expedition.baseCrystal;
+            reward.coin = Mathf.RoundToInt((expedition.baseCoin + creaturePower * 2) * clearMultiplier);
+            reward.food = Mathf.RoundToInt((expedition.baseFood + creatureLevel * 5) * clearMultiplier);
+            reward.crystal = Mathf.RoundToInt(expedition.baseCrystal * clearMultiplier);
 
             return reward;
+        }
+
+        public ExpeditionBattleResult PreviewBattle(ExpeditionData expedition, PlayerCreatureData creature)
+        {
+            return ResolveBattle(expedition, creature);
+        }
+
+        public int GetCreaturePower(PlayerCreatureData creature)
+        {
+            FindReferencesIfNeeded();
+
+            if (creature == null)
+            {
+                return 0;
+            }
+
+            CreatureStaticData creatureStaticData = creatureDatabase != null
+                ? creatureDatabase.GetCreatureById(creature.creatureId)
+                : null;
+
+            return progressionManager != null
+                ? progressionManager.CalculatePower(creatureStaticData, creature)
+                : CalculatePowerFallback(creatureStaticData, creature);
         }
 
         public ExpeditionData GetExpeditionById(string expeditionId)
@@ -376,6 +412,157 @@ namespace SpiritHatchers.Expedition
             return Mathf.RoundToInt(creatureData.basePower * multiplier + Mathf.Max(1, creature.level) * 5);
         }
 
+        private ExpeditionBattleResult ResolveBattle(ExpeditionData expedition, PlayerCreatureData creature)
+        {
+            ExpeditionBattleResult result = new ExpeditionBattleResult();
+
+            if (expedition == null || creature == null)
+            {
+                result.resultLabel = "No Battle";
+                result.rewardMultiplier = 0f;
+                return result;
+            }
+
+            CreatureStaticData creatureStaticData = creatureDatabase != null
+                ? creatureDatabase.GetCreatureById(creature.creatureId)
+                : null;
+
+            int creaturePower = progressionManager != null
+                ? progressionManager.CalculatePower(creatureStaticData, creature)
+                : CalculatePowerFallback(creatureStaticData, creature);
+
+            CreatureElement creatureElement = creatureStaticData != null ? creatureStaticData.element : CreatureElement.Fire;
+            string creatureName = creatureStaticData != null ? creatureStaticData.creatureName : creature.creatureId;
+            string skillName = creatureStaticData != null && !string.IsNullOrEmpty(creatureStaticData.skillName)
+                ? creatureStaticData.skillName
+                : "Spirit Strike";
+            float skillMultiplier = creatureStaticData != null ? Mathf.Max(0.1f, creatureStaticData.skillPowerMultiplier) : 1f;
+
+            int creatureHealth = Mathf.Max(30, creaturePower * 3);
+            int maxCreatureHealth = creatureHealth;
+            result.totalEnemies = expedition.enemies != null ? expedition.enemies.Count : 0;
+
+            if (result.totalEnemies == 0)
+            {
+                result.enemiesDefeated = 0;
+                result.resultLabel = "Clear";
+                result.rewardMultiplier = 1f;
+                result.logLines.Add($"{creatureName} explored safely. No enemies appeared.");
+                return result;
+            }
+
+            for (int i = 0; i < expedition.enemies.Count; i++)
+            {
+                ExpeditionEnemyData enemy = expedition.enemies[i];
+                if (enemy == null)
+                {
+                    continue;
+                }
+
+                string enemyName = string.IsNullOrEmpty(enemy.enemyName) ? "Unknown Enemy" : enemy.enemyName;
+                int enemyHealth = Mathf.Max(1, enemy.maxHealth);
+                int round = 0;
+
+                result.logLines.Add($"Encounter {i + 1}: {enemyName} appeared.");
+
+                while (creatureHealth > 0 && enemyHealth > 0 && round < 8)
+                {
+                    round++;
+                    int damage = CalculateSkillDamage(creaturePower, skillMultiplier, creatureElement, enemy.element, enemy.defense);
+                    enemyHealth -= damage;
+                    result.logLines.Add($"{creatureName} used {skillName} for {damage} damage.");
+
+                    if (enemyHealth <= 0)
+                    {
+                        break;
+                    }
+
+                    int counterDamage = Mathf.Max(1, enemy.attack + enemy.maxHealth / 8 - creaturePower / 12);
+                    creatureHealth -= counterDamage;
+                    result.logLines.Add($"{enemyName} countered for {counterDamage} damage.");
+                }
+
+                if (enemyHealth > 0)
+                {
+                    result.logLines.Add($"{creatureName} retreated from {enemyName}.");
+                    break;
+                }
+
+                result.enemiesDefeated++;
+                result.logLines.Add($"{enemyName} defeated.");
+            }
+
+            result.creatureRemainingHealthPercent = maxCreatureHealth > 0
+                ? Mathf.Clamp01((float)creatureHealth / maxCreatureHealth)
+                : 0f;
+            result.rewardMultiplier = CalculateBattleRewardMultiplier(result.enemiesDefeated, result.totalEnemies);
+            result.resultLabel = BuildBattleResultLabel(result.enemiesDefeated, result.totalEnemies, result.creatureRemainingHealthPercent);
+            return result;
+        }
+
+        private int CalculateSkillDamage(
+            int creaturePower,
+            float skillMultiplier,
+            CreatureElement attackerElement,
+            CreatureElement defenderElement,
+            int enemyDefense)
+        {
+            float elementMultiplier = GetElementMultiplier(attackerElement, defenderElement);
+            float rawDamage = Mathf.Max(1f, creaturePower * 0.35f * skillMultiplier * elementMultiplier);
+            return Mathf.Max(1, Mathf.RoundToInt(rawDamage) - Mathf.Max(0, enemyDefense));
+        }
+
+        private float GetElementMultiplier(CreatureElement attacker, CreatureElement defender)
+        {
+            if ((attacker == CreatureElement.Fire && defender == CreatureElement.Nature) ||
+                (attacker == CreatureElement.Nature && defender == CreatureElement.Water) ||
+                (attacker == CreatureElement.Water && defender == CreatureElement.Fire) ||
+                (attacker == CreatureElement.Shadow && defender == CreatureElement.Nature))
+            {
+                return 1.25f;
+            }
+
+            if ((defender == CreatureElement.Fire && attacker == CreatureElement.Nature) ||
+                (defender == CreatureElement.Nature && attacker == CreatureElement.Water) ||
+                (defender == CreatureElement.Water && attacker == CreatureElement.Fire) ||
+                (defender == CreatureElement.Shadow && attacker == CreatureElement.Nature))
+            {
+                return 0.8f;
+            }
+
+            return 1f;
+        }
+
+        private float CalculateBattleRewardMultiplier(int enemiesDefeated, int totalEnemies)
+        {
+            if (totalEnemies <= 0)
+            {
+                return 1f;
+            }
+
+            if (enemiesDefeated >= totalEnemies)
+            {
+                return 1f;
+            }
+
+            return Mathf.Clamp(0.25f + (float)enemiesDefeated / totalEnemies * 0.6f, 0.25f, 0.85f);
+        }
+
+        private string BuildBattleResultLabel(int enemiesDefeated, int totalEnemies, float remainingHealthPercent)
+        {
+            if (totalEnemies <= 0 || enemiesDefeated >= totalEnemies)
+            {
+                return remainingHealthPercent >= 0.65f ? "Great Clear" : "Clear";
+            }
+
+            if (enemiesDefeated > 0)
+            {
+                return "Partial Clear";
+            }
+
+            return "Retreat";
+        }
+
         private bool TryParseUtc(string value, out DateTime dateTime)
         {
             if (DateTimeOffset.TryParse(
@@ -451,5 +638,16 @@ namespace SpiritHatchers.Expedition
         public int coin;
         public int food;
         public int crystal;
+    }
+
+    [Serializable]
+    public class ExpeditionBattleResult
+    {
+        public string resultLabel;
+        public int enemiesDefeated;
+        public int totalEnemies;
+        public float creatureRemainingHealthPercent;
+        public float rewardMultiplier = 1f;
+        public List<string> logLines = new List<string>();
     }
 }

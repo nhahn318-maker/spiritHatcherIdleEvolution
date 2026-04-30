@@ -120,11 +120,32 @@ namespace SpiritHatchers.UI
                 return;
             }
 
-            if (expeditionManager.ClaimReward(activeExpedition, out ExpeditionReward reward))
+            if (expeditionManager.ClaimReward(activeExpedition, out ExpeditionReward reward, out ExpeditionBattleResult battleResult))
             {
-                ShowMessage($"Claimed: {reward.coin} Coin, {reward.food} Food, {reward.crystal} Crystal");
                 Refresh();
+                ShowMessage(BuildClaimMessage(reward, battleResult));
             }
+        }
+
+        private string BuildClaimMessage(ExpeditionReward reward, ExpeditionBattleResult battleResult)
+        {
+            string resultLabel = battleResult != null && !string.IsNullOrEmpty(battleResult.resultLabel)
+                ? battleResult.resultLabel
+                : "Complete";
+            string message = $"{resultLabel}: {reward.coin} Coin, {reward.food} Food, {reward.crystal} Crystal";
+
+            if (battleResult == null || battleResult.logLines == null || battleResult.logLines.Count == 0)
+            {
+                return message;
+            }
+
+            int startIndex = Mathf.Max(0, battleResult.logLines.Count - 4);
+            for (int i = startIndex; i < battleResult.logLines.Count; i++)
+            {
+                message += $"\n{battleResult.logLines[i]}";
+            }
+
+            return message;
         }
 
         private void ClearCards()

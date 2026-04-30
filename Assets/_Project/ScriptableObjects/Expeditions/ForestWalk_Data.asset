@@ -16,6 +16,24 @@ MonoBehaviour:
   expeditionName: Forest Walk
   description: 
   durationSeconds: 10
+  backgroundSprite: {fileID: 21300000, guid: 6afe2fcb96900924186c7797e98fa163, type: 3}
+  sceneTintColor: {r: 0.2, g: 0.42, b: 0.24, a: 1}
+  recommendedPower: 35
+  enemies:
+  - enemyId: forest_slime
+    enemyName: Forest Slime
+    element: 2
+    maxHealth: 22
+    attack: 4
+    defense: 0
+    sprite: {fileID: 0}
+  - enemyId: wild_sprout
+    enemyName: Wild Sprout
+    element: 2
+    maxHealth: 30
+    attack: 6
+    defense: 1
+    sprite: {fileID: 21300000, guid: 4e3ae9d48bf03f44a86043d93c655a96, type: 3}
   baseCoin: 100
   baseFood: 50
   baseCrystal: 0

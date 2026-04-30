@@ -158,7 +158,10 @@ namespace SpiritHatchers.UI
 
             SetText(nameText, expeditionData.expeditionName);
             SetText(durationText, FormatDuration(expeditionData.durationSeconds));
-            SetText(rewardText, $"Base: {expeditionData.baseCoin} Coin  {expeditionData.baseFood} Food  {expeditionData.baseCrystal} Crystal");
+            int enemyCount = expeditionData.enemies != null ? expeditionData.enemies.Count : 0;
+            SetText(
+                rewardText,
+                $"Power {expeditionData.recommendedPower}  Enemies {enemyCount}  Base: {expeditionData.baseCoin} Coin  {expeditionData.baseFood} Food  {expeditionData.baseCrystal} Crystal");
 
             bool hasActive = activeExpedition != null;
             bool isComplete = hasActive && expeditionManager != null && expeditionManager.IsComplete(activeExpedition);

@@ -412,7 +412,7 @@ GameObject:
   - component: {fileID: 55081053}
   - component: {fileID: 55081052}
   m_Layer: 0
-  m_Name: CrystalResource
+  m_Name: CrystalResouce
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2110,10 +2110,18 @@ MonoBehaviour:
   expeditionManager: {fileID: 1355505027}
   creatureDatabase: {fileID: 11400000, guid: fd324f63ead9e594f88b0139141549eb, type: 2}
   popupRoot: {fileID: 868864528}
+  backgroundImage: {fileID: 0}
   titleText: {fileID: 1248491840}
   messageText: {fileID: 171476068}
+  enemyListText: {fileID: 0}
   creatureButtonParent: {fileID: 1461668573}
   creatureButtonPrefab: {fileID: 982188620482584519, guid: c38a8804bd310d746a2b42513349ea6e, type: 3}
+  battleStageRoot: {fileID: 0}
+  selectedCreatureImage: {fileID: 0}
+  selectedCreatureText: {fileID: 0}
+  enemyPreviewParent: {fileID: 0}
+  startButton: {fileID: 0}
+  startButtonText: {fileID: 0}
   closeButton: {fileID: 676999181}
 --- !u!1 &585723756
 GameObject:

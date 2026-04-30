@@ -18,6 +18,17 @@ namespace SpiritHatchers.Data
 
         [Header("Stats")]
         [Min(1)] public int basePower = 10;
+        [Min(1)] public int speed = 50;
+
+        [Header("Default Skill")]
+        public string skillName = "Spirit Strike";
+        public CreatureSkillRange skillRange = CreatureSkillRange.Melee;
+        [Min(0.1f)] public float skillPowerMultiplier = 1f;
+
+        [Header("Skill Visuals")]
+        public Sprite[] attackFrames;
+        public Sprite[] projectileFrames;
+        public Sprite[] impactFrames;
 
         [Header("Evolution Forms")]
         public List<CreatureFormData> forms = new List<CreatureFormData>();

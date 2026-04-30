@@ -16,6 +16,31 @@ MonoBehaviour:
   expeditionName: Crystal Cave
   description: 
   durationSeconds: 10
+  backgroundSprite: {fileID: 0}
+  sceneTintColor: {r: 0.18, g: 0.34, b: 0.58, a: 1}
+  recommendedPower: 70
+  enemies:
+  - enemyId: cave_bat
+    enemyName: Cave Bat
+    element: 3
+    maxHealth: 35
+    attack: 8
+    defense: 1
+    sprite: {fileID: 0}
+  - enemyId: crystal_slime
+    enemyName: Crystal Slime
+    element: 1
+    maxHealth: 48
+    attack: 10
+    defense: 2
+    sprite: {fileID: 0}
+  - enemyId: stone_guardian
+    enemyName: Stone Guardian
+    element: 2
+    maxHealth: 65
+    attack: 12
+    defense: 4
+    sprite: {fileID: 0}
   baseCoin: 300
   baseFood: 100
   baseCrystal: 5

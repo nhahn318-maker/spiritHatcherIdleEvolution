@@ -49,6 +49,7 @@ Creature sprites should be:
 - Transparent background
 - Readable at small size
 - Suitable for Unity 2D
+- Generated on a flat chroma-key background first, then converted to true PNG alpha
 
 Creature sprites should not be:
 
@@ -60,6 +61,15 @@ Creature sprites should not be:
 - Semi-transparent
 - Cropped
 - With text or UI
+- With a fake transparent checkerboard baked into the image
+
+Sprite generation note:
+
+- Do not ask image generation tools for "transparent background" unless the tool supports true alpha output.
+- Prefer a perfectly flat chroma-key background and remove it after generation.
+- Use `#ff00ff` chroma-key for green or nature creatures.
+- Use `#00ff00` chroma-key for non-green creatures.
+- Always validate the final imported sprite has real alpha, not an RGB image with a checkerboard background.
 
 ## 4. Background Style
 

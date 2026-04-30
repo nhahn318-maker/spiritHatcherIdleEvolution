@@ -17,6 +17,21 @@ MonoBehaviour:
   element: 0
   rarity: 0
   basePower: 10
+  speed: 50
+  skillName: Ember Bite
+  skillRange: 0
+  skillPowerMultiplier: 1.2
+  attackFrames:
+  - {fileID: 869347500, guid: 1ebe56e6853850145b7d455ee265675b, type: 3}
+  - {fileID: 1416546400, guid: 1ebe56e6853850145b7d455ee265675b, type: 3}
+  - {fileID: -1330709316, guid: 1ebe56e6853850145b7d455ee265675b, type: 3}
+  - {fileID: -2000491072, guid: 1ebe56e6853850145b7d455ee265675b, type: 3}
+  - {fileID: -361891351, guid: 1ebe56e6853850145b7d455ee265675b, type: 3}
+  - {fileID: 1995888909, guid: 1ebe56e6853850145b7d455ee265675b, type: 3}
+  - {fileID: -986992661, guid: 1ebe56e6853850145b7d455ee265675b, type: 3}
+  - {fileID: -1065731041, guid: 1ebe56e6853850145b7d455ee265675b, type: 3}
+  projectileFrames: []
+  impactFrames: []
   forms:
   - formIndex: 0
     formName: Baby Ember Fox
