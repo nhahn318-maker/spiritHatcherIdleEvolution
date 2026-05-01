@@ -10,6 +10,7 @@ namespace SpiritHatchers.Data
         public string formName;
         public Sprite sprite;
         public Sprite[] idleFrames;
+        public Sprite[] attackFrames;
         [Min(0.1f)] public float displayScale = 1f;
         public Vector2 battleVisualOffset;
 

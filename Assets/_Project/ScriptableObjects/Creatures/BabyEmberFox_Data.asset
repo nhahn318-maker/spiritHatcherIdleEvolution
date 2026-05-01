@@ -23,15 +23,7 @@ MonoBehaviour:
   skillPowerMultiplier: 1.2
   idleFramesFaceRight: 1
   attackFramesFaceRight: 1
-  attackFrames:
-  - {fileID: 869347500, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
-  - {fileID: 1416546400, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
-  - {fileID: -1330709316, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
-  - {fileID: -2000491072, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
-  - {fileID: -361891351, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
-  - {fileID: 1995888909, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
-  - {fileID: -986992661, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
-  - {fileID: -1065731041, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
+  attackFrames: []
   projectileFrames: []
   impactFrames:
   - {fileID: 869347500, guid: 6171b4aa3c164e678e7fa5dcadf8c6c8, type: 3}
@@ -53,6 +45,15 @@ MonoBehaviour:
     - {fileID: -101460478, guid: e30f3f860eba6074fadc4022af94f686, type: 3}
     - {fileID: -964044037, guid: e30f3f860eba6074fadc4022af94f686, type: 3}
     - {fileID: 1176632417, guid: e30f3f860eba6074fadc4022af94f686, type: 3}
+    attackFrames:
+    - {fileID: 869347500, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
+    - {fileID: 1416546400, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
+    - {fileID: -1330709316, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
+    - {fileID: -2000491072, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
+    - {fileID: -361891351, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
+    - {fileID: 1995888909, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
+    - {fileID: -986992661, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
+    - {fileID: -1065731041, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
     displayScale: 0.85
     battleVisualOffset: {x: 0, y: 0}
     requiredLevel: 1
@@ -71,6 +72,15 @@ MonoBehaviour:
     - {fileID: 1211629616, guid: c272d0a428013c24884c06a4588c2e73, type: 3}
     - {fileID: -170102769, guid: c272d0a428013c24884c06a4588c2e73, type: 3}
     - {fileID: 1391758999, guid: c272d0a428013c24884c06a4588c2e73, type: 3}
+    attackFrames:
+    - {fileID: 174081796, guid: 1ef465206eee4282913de7d586e7f034, type: 3}
+    - {fileID: -937057159, guid: 1ef465206eee4282913de7d586e7f034, type: 3}
+    - {fileID: -117302084, guid: 1ef465206eee4282913de7d586e7f034, type: 3}
+    - {fileID: 195989223, guid: 1ef465206eee4282913de7d586e7f034, type: 3}
+    - {fileID: 71669734, guid: 1ef465206eee4282913de7d586e7f034, type: 3}
+    - {fileID: 1211629616, guid: 1ef465206eee4282913de7d586e7f034, type: 3}
+    - {fileID: -170102769, guid: 1ef465206eee4282913de7d586e7f034, type: 3}
+    - {fileID: 1391758999, guid: 1ef465206eee4282913de7d586e7f034, type: 3}
     displayScale: 1
     battleVisualOffset: {x: 0, y: 0}
     requiredLevel: 10
@@ -89,6 +99,7 @@ MonoBehaviour:
     - {fileID: 1273995639, guid: a0eb08b593c118944b5524eac9bffc99, type: 3}
     - {fileID: 142962502, guid: a0eb08b593c118944b5524eac9bffc99, type: 3}
     - {fileID: -391603133, guid: a0eb08b593c118944b5524eac9bffc99, type: 3}
+    attackFrames: []
     displayScale: 1.3
     battleVisualOffset: {x: 0, y: 0}
     requiredLevel: 25

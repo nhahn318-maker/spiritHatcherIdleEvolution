@@ -235,6 +235,7 @@ namespace SpiritHatchers.UI
                 CreatureFormData enemyForm = GetDefaultCreatureForm(enemyCreatureData);
                 Sprite enemySprite = enemyForm != null && enemyForm.sprite != null ? enemyForm.sprite : enemy.sprite;
                 Sprite[] enemyIdleFrames = enemyForm != null ? enemyForm.idleFrames : null;
+                Sprite[] enemyAttackFrames = GetFormOverrideFrames(enemyForm != null ? enemyForm.attackFrames : null, enemyCreatureData != null ? enemyCreatureData.attackFrames : null);
                 float enemyDisplayScale = enemyForm != null ? enemyForm.displayScale : 1f;
                 Vector2 enemyVisualOffset = enemyForm != null ? enemyForm.battleVisualOffset : Vector2.zero;
                 int maxHealth = Mathf.Max(1, enemy.maxHealth);
@@ -250,7 +251,7 @@ namespace SpiritHatchers.UI
                     enemyDisplayScale,
                     enemyVisualOffset,
                     enemyIdleFrames,
-                    enemyCreatureData != null ? enemyCreatureData.attackFrames : null,
+                    enemyAttackFrames,
                     enemyCreatureData != null ? enemyCreatureData.projectileFrames : null,
                     enemyCreatureData != null ? enemyCreatureData.impactFrames : null,
                     enemyCreatureData != null ? enemyCreatureData.skillRange : CreatureSkillRange.Melee,
@@ -293,6 +294,7 @@ namespace SpiritHatchers.UI
                         ? creatureDatabase.GetCreatureById(selectedCreature.creatureId)
                         : null;
                     CreatureFormData form = GetCreatureForm(staticData, selectedCreature);
+                    Sprite[] attackFrames = GetFormOverrideFrames(form != null ? form.attackFrames : null, staticData != null ? staticData.attackFrames : null);
                     string creatureName = staticData != null ? staticData.creatureName : selectedCreature.creatureId;
                     int maxHealth = Mathf.Max(1, staticData != null ? staticData.basePower * 3 + selectedCreature.level * 5 : 30);
                     int attackPower = Mathf.Max(1, Mathf.RoundToInt((staticData != null ? staticData.basePower : 10) * (staticData != null ? staticData.skillPowerMultiplier : 1f)));
@@ -307,7 +309,7 @@ namespace SpiritHatchers.UI
                         form != null ? form.displayScale : 1f,
                         form != null ? form.battleVisualOffset : Vector2.zero,
                         form != null ? form.idleFrames : null,
-                        staticData != null ? staticData.attackFrames : null,
+                        attackFrames,
                         staticData != null ? staticData.projectileFrames : null,
                         staticData != null ? staticData.impactFrames : null,
                         staticData != null ? staticData.skillRange : CreatureSkillRange.Melee,
@@ -440,6 +442,11 @@ namespace SpiritHatchers.UI
 
             CreatureFormData form = staticData.GetFormByIndex(0);
             return form != null ? form : staticData.forms[0];
+        }
+
+        private Sprite[] GetFormOverrideFrames(Sprite[] formFrames, Sprite[] fallbackFrames)
+        {
+            return formFrames != null && formFrames.Length > 0 ? formFrames : fallbackFrames;
         }
 
         private void ClearSpawnedViews()
