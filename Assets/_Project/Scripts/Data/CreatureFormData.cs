@@ -11,6 +11,7 @@ namespace SpiritHatchers.Data
         public Sprite sprite;
         public Sprite[] idleFrames;
         [Min(0.1f)] public float displayScale = 1f;
+        public Vector2 battleVisualOffset;
 
         [Header("Evolution Requirements")]
         [Min(1)] public int requiredLevel;

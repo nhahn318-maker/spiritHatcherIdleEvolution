@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f6e55d21616200c44afa323f307f2c6f
+guid: 738a4aab2b864ed0b6909b63cdd481b7
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,13 +97,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wild_sprout_idle_sheet_padded_384x512_0
+      name: seed_spit_impact_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 384
-        height: 512
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -111,20 +111,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 501c7d3f5e2d95e4b8394983c7ca748e
-      internalID: 1061395759
+      spriteID: 4851adfc7f4f6354fb499a6a017514b1
+      internalID: 180291432
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: wild_sprout_idle_sheet_padded_384x512_1
+      name: seed_spit_impact_1
       rect:
         serializedVersion: 2
-        x: 384
+        x: 256
         y: 0
-        width: 384
-        height: 512
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -132,20 +132,41 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: abe77001760b71242b83d6d43da504d7
-      internalID: 713211540
+      spriteID: 8a9c31a152798c2418610ffff050b490
+      internalID: -1010360537
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: wild_sprout_idle_sheet_padded_384x512_2
+      name: seed_spit_impact_2
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a19754f04c44abb45845481479b19022
+      internalID: 1191183688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: seed_spit_impact_3
       rect:
         serializedVersion: 2
         x: 768
         y: 0
-        width: 384
-        height: 512
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,20 +174,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 55ade094a974d454ba1b2f8916289d25
-      internalID: 1813530357
+      spriteID: a2bc022d7f66b774fb91e26ac51c8364
+      internalID: 2093338442
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: wild_sprout_idle_sheet_padded_384x512_3
+      name: seed_spit_impact_4
       rect:
         serializedVersion: 2
-        x: 1152
+        x: 1024
         y: 0
-        width: 384
-        height: 512
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -174,20 +195,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 565da77fc877da744b2a98ab8c7c009f
-      internalID: -447040239
+      spriteID: dbe8c19098c66cd43aec368018e3266c
+      internalID: 787952214
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: wild_sprout_idle_sheet_padded_384x512_4
+      name: seed_spit_impact_5
       rect:
         serializedVersion: 2
-        x: 1536
+        x: 1280
         y: 0
-        width: 384
-        height: 512
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -195,71 +216,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b0c7c26b70718eb428fc6d1c61f4a595
-      internalID: -797394700
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: wild_sprout_idle_sheet_padded_384x512_5
-      rect:
-        serializedVersion: 2
-        x: 1920
-        y: 0
-        width: 384
-        height: 512
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: adb69309a23168c49b0eb7442dfa62a4
-      internalID: 1365367231
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: wild_sprout_idle_sheet_padded_384x512_6
-      rect:
-        serializedVersion: 2
-        x: 2304
-        y: 0
-        width: 384
-        height: 512
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 9837afeaced934c479dc71c87b99bba9
-      internalID: -1756337635
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: wild_sprout_idle_sheet_padded_384x512_7
-      rect:
-        serializedVersion: 2
-        x: 2688
-        y: 0
-        width: 384
-        height: 512
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 52fc0729b641d8a4ea820114122dada8
-      internalID: -1796659939
+      spriteID: 0b1c42d4c0c05524896de0ef31498f8f
+      internalID: 498788183
       vertices: []
       indices: 
       edges: []
@@ -275,14 +233,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      wild_sprout_idle_sheet_padded_384x512_0: 1061395759
-      wild_sprout_idle_sheet_padded_384x512_1: 713211540
-      wild_sprout_idle_sheet_padded_384x512_2: 1813530357
-      wild_sprout_idle_sheet_padded_384x512_3: -447040239
-      wild_sprout_idle_sheet_padded_384x512_4: -797394700
-      wild_sprout_idle_sheet_padded_384x512_5: 1365367231
-      wild_sprout_idle_sheet_padded_384x512_6: -1756337635
-      wild_sprout_idle_sheet_padded_384x512_7: -1796659939
+      seed_spit_impact_0: 180291432
+      seed_spit_impact_1: -1010360537
+      seed_spit_impact_2: 1191183688
+      seed_spit_impact_3: 2093338442
+      seed_spit_impact_4: 787952214
+      seed_spit_impact_5: 498788183
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

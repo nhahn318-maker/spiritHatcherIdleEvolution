@@ -12,13 +12,18 @@ namespace SpiritHatchers.UI
     {
         private const int PlayerSlotCount = 3;
         private const int EnemySlotCount = 3;
-        private const float CombatantSlotSize = 260f;
-        private const float CombatantSpriteScale = 1.24f;
+        private const float CombatantSlotSize = 108f;
+        private const float CombatantSpriteScale = 3f;
         private const float BaseAttackIntervalSeconds = 2f;
         private const float BaselineSpeed = 50f;
-        private const float MeleeContactOffset = 44f;
+        private const float MeleeContactOffset = 18f;
         private const float MeleeLungeDuration = 0.34f;
-        private const float MeleeReturnDuration = 0.28f;
+        private const float ImpactFrameDuration = 0.045f;
+        private const float ImpactEffectSize = 152f;
+        private const float ProjectileFrameDuration = 0.045f;
+        private const float ProjectileSize = 76f;
+        private const float ProjectileSpeed = 900f;
+        private const float ProjectileStartOffset = 36f;
 
         [SerializeField] private CreatureDatabase creatureDatabase;
         [SerializeField] private Image backgroundImage;
@@ -73,6 +78,7 @@ namespace SpiritHatchers.UI
             CreateEnemies(expedition);
             CreatePlayerSlots(selectedCreature);
             gameObject.SetActive(true);
+            ForceCombatantLayout();
             StartAttackLoop();
         }
 
@@ -108,29 +114,31 @@ namespace SpiritHatchers.UI
             {
                 GameObject enemies = new GameObject("EnemySlots", typeof(RectTransform));
                 enemies.transform.SetParent(transform, false);
-                SetAnchored(enemies.GetComponent<RectTransform>(), new Vector2(0f, 0.52f), new Vector2(1f, 0.84f), Vector2.zero, Vector2.zero);
-                HorizontalLayoutGroup layout = enemies.AddComponent<HorizontalLayoutGroup>();
+                SetAnchored(enemies.GetComponent<RectTransform>(), new Vector2(0.54f, 0.08f), new Vector2(0.98f, 0.9f), Vector2.zero, Vector2.zero);
+                VerticalLayoutGroup layout = enemies.AddComponent<VerticalLayoutGroup>();
                 layout.childAlignment = TextAnchor.MiddleCenter;
                 layout.spacing = 28f;
-                layout.padding = new RectOffset(80, 80, 20, 20);
+                layout.padding = new RectOffset(0, 0, 0, 0);
                 layout.childForceExpandWidth = false;
                 layout.childForceExpandHeight = false;
                 enemyRoot = enemies.transform;
             }
+            ConfigureCombatantSlotRoot(enemyRoot, new Vector2(0.54f, 0.08f), new Vector2(0.98f, 0.9f));
 
             if (playerRoot == null)
             {
                 GameObject players = new GameObject("PlayerSlots", typeof(RectTransform));
                 players.transform.SetParent(transform, false);
-                SetAnchored(players.GetComponent<RectTransform>(), new Vector2(0f, 0.16f), new Vector2(1f, 0.48f), Vector2.zero, Vector2.zero);
-                HorizontalLayoutGroup layout = players.AddComponent<HorizontalLayoutGroup>();
+                SetAnchored(players.GetComponent<RectTransform>(), new Vector2(0.02f, 0.08f), new Vector2(0.46f, 0.9f), Vector2.zero, Vector2.zero);
+                VerticalLayoutGroup layout = players.AddComponent<VerticalLayoutGroup>();
                 layout.childAlignment = TextAnchor.MiddleCenter;
                 layout.spacing = 28f;
-                layout.padding = new RectOffset(80, 80, 20, 20);
+                layout.padding = new RectOffset(0, 0, 0, 0);
                 layout.childForceExpandWidth = false;
                 layout.childForceExpandHeight = false;
                 playerRoot = players.transform;
             }
+            ConfigureCombatantSlotRoot(playerRoot, new Vector2(0.02f, 0.08f), new Vector2(0.46f, 0.9f));
 
             if (titleText == null)
             {
@@ -143,6 +151,53 @@ namespace SpiritHatchers.UI
                 closeButton = CreateButton(transform, "BackButton", "Back");
                 SetAnchored(closeButton.GetComponent<RectTransform>(), new Vector2(0.03f, 0.91f), new Vector2(0.25f, 0.98f), Vector2.zero, Vector2.zero);
                 closeButton.onClick.AddListener(Hide);
+            }
+        }
+
+        private void ConfigureCombatantSlotRoot(Transform slotRoot, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            RectTransform rectTransform = slotRoot as RectTransform;
+            if (rectTransform == null)
+            {
+                return;
+            }
+
+            SetAnchored(rectTransform, anchorMin, anchorMax, Vector2.zero, Vector2.zero);
+
+            HorizontalLayoutGroup horizontalLayout = slotRoot.GetComponent<HorizontalLayoutGroup>();
+            if (horizontalLayout != null)
+            {
+                horizontalLayout.enabled = false;
+            }
+
+            VerticalLayoutGroup verticalLayout = slotRoot.GetComponent<VerticalLayoutGroup>();
+            if (verticalLayout == null)
+            {
+                verticalLayout = slotRoot.gameObject.AddComponent<VerticalLayoutGroup>();
+            }
+
+            verticalLayout.enabled = true;
+            verticalLayout.childAlignment = TextAnchor.MiddleCenter;
+            verticalLayout.spacing = 28f;
+            verticalLayout.padding = new RectOffset(0, 0, 0, 0);
+            verticalLayout.childForceExpandWidth = false;
+            verticalLayout.childForceExpandHeight = false;
+        }
+
+        private void ForceCombatantLayout()
+        {
+            Canvas.ForceUpdateCanvases();
+            ForceRebuildLayout(enemyRoot);
+            ForceRebuildLayout(playerRoot);
+            Canvas.ForceUpdateCanvases();
+        }
+
+        private void ForceRebuildLayout(Transform root)
+        {
+            RectTransform rectTransform = root as RectTransform;
+            if (rectTransform != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
             }
         }
 
@@ -181,6 +236,7 @@ namespace SpiritHatchers.UI
                 Sprite enemySprite = enemyForm != null && enemyForm.sprite != null ? enemyForm.sprite : enemy.sprite;
                 Sprite[] enemyIdleFrames = enemyForm != null ? enemyForm.idleFrames : null;
                 float enemyDisplayScale = enemyForm != null ? enemyForm.displayScale : 1f;
+                Vector2 enemyVisualOffset = enemyForm != null ? enemyForm.battleVisualOffset : Vector2.zero;
                 int maxHealth = Mathf.Max(1, enemy.maxHealth);
                 int attackPower = Mathf.Max(1, enemy.attack);
 
@@ -192,9 +248,14 @@ namespace SpiritHatchers.UI
                     CombatantSlotSize,
                     true,
                     enemyDisplayScale,
+                    enemyVisualOffset,
                     enemyIdleFrames,
                     enemyCreatureData != null ? enemyCreatureData.attackFrames : null,
+                    enemyCreatureData != null ? enemyCreatureData.projectileFrames : null,
+                    enemyCreatureData != null ? enemyCreatureData.impactFrames : null,
                     enemyCreatureData != null ? enemyCreatureData.skillRange : CreatureSkillRange.Melee,
+                    enemyCreatureData == null || enemyCreatureData.idleFramesFaceRight,
+                    enemyCreatureData == null || enemyCreatureData.attackFramesFaceRight,
                     enemyCreatureData != null ? enemyCreatureData.speed : BaselineSpeed,
                     maxHealth,
                     attackPower);
@@ -212,12 +273,12 @@ namespace SpiritHatchers.UI
             image.color = new Color(1f, 1f, 1f, 0.12f);
 
             LayoutElement layout = slot.AddComponent<LayoutElement>();
-            layout.preferredWidth = 190f;
-            layout.preferredHeight = 190f;
+            layout.preferredWidth = CombatantSlotSize;
+            layout.preferredHeight = CombatantSlotSize;
             layout.flexibleWidth = 0f;
             layout.flexibleHeight = 0f;
 
-            TMP_Text label = CreateText(slot.transform, "EmptyText", "Empty", 22f, TextAlignmentOptions.Center);
+            TMP_Text label = CreateText(slot.transform, "EmptyText", "Empty", 14f, TextAlignmentOptions.Center);
             label.color = new Color(1f, 0.92f, 0.72f, 0.5f);
             StretchFull(label.rectTransform);
         }
@@ -244,9 +305,14 @@ namespace SpiritHatchers.UI
                         CombatantSlotSize,
                         false,
                         form != null ? form.displayScale : 1f,
+                        form != null ? form.battleVisualOffset : Vector2.zero,
                         form != null ? form.idleFrames : null,
                         staticData != null ? staticData.attackFrames : null,
+                        staticData != null ? staticData.projectileFrames : null,
+                        staticData != null ? staticData.impactFrames : null,
                         staticData != null ? staticData.skillRange : CreatureSkillRange.Melee,
+                        staticData == null || staticData.idleFramesFaceRight,
+                        staticData == null || staticData.attackFramesFaceRight,
                         staticData != null ? staticData.speed : BaselineSpeed,
                         maxHealth,
                         attackPower);
@@ -268,12 +334,12 @@ namespace SpiritHatchers.UI
             image.color = new Color(1f, 1f, 1f, 0.16f);
 
             LayoutElement layout = slot.AddComponent<LayoutElement>();
-            layout.preferredWidth = 220f;
-            layout.preferredHeight = 220f;
+            layout.preferredWidth = CombatantSlotSize;
+            layout.preferredHeight = CombatantSlotSize;
             layout.flexibleWidth = 0f;
             layout.flexibleHeight = 0f;
 
-            TMP_Text label = CreateText(slot.transform, "EmptyText", "Empty", 24f, TextAlignmentOptions.Center);
+            TMP_Text label = CreateText(slot.transform, "EmptyText", "Empty", 14f, TextAlignmentOptions.Center);
             label.color = new Color(1f, 0.92f, 0.72f, 0.62f);
             StretchFull(label.rectTransform);
         }
@@ -286,9 +352,14 @@ namespace SpiritHatchers.UI
             float preferredSize,
             bool enemy,
             float displayScale = 1f,
+            Vector2 visualOffset = default(Vector2),
             Sprite[] idleFrames = null,
             Sprite[] attackFrames = null,
+            Sprite[] projectileFrames = null,
+            Sprite[] impactFrames = null,
             CreatureSkillRange skillRange = CreatureSkillRange.Melee,
+            bool idleFramesFaceRight = true,
+            bool attackFramesFaceRight = true,
             float speed = BaselineSpeed,
             int maxHealth = 1,
             int attackPower = 1)
@@ -308,15 +379,17 @@ namespace SpiritHatchers.UI
 
             Image spriteImage = CreateImage(root.transform, "Sprite", fallbackColor);
             SetAnchored(spriteImage.rectTransform, new Vector2(0f, 0.12f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
+            spriteImage.rectTransform.anchoredPosition = visualOffset;
             spriteImage.sprite = sprite;
             spriteImage.color = sprite != null ? Color.white : fallbackColor;
             spriteImage.preserveAspect = true;
-            spriteImage.rectTransform.localScale = Vector3.one * Mathf.Max(0.1f, displayScale * CombatantSpriteScale);
+            float spriteScale = Mathf.Max(0.1f, displayScale * CombatantSpriteScale);
+            spriteImage.rectTransform.localScale = new Vector3(enemy ? -spriteScale : spriteScale, spriteScale, spriteScale);
 
             CreatureSpriteAnimationUI animation = spriteImage.gameObject.AddComponent<CreatureSpriteAnimationUI>();
             animation.Play(idleFrames, sprite);
 
-            TMP_Text label = CreateText(root.transform, "Name", labelText, enemy ? 20f : 22f, TextAlignmentOptions.Center);
+            TMP_Text label = CreateText(root.transform, "Name", labelText, 13f, TextAlignmentOptions.Center);
             SetAnchored(label.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.18f), Vector2.zero, Vector2.zero);
 
             CombatantView combatant = new CombatantView
@@ -328,8 +401,13 @@ namespace SpiritHatchers.UI
                 displayName = labelText,
                 idleFrames = idleFrames,
                 attackFrames = attackFrames,
+                projectileFrames = projectileFrames,
+                impactFrames = impactFrames,
                 fallbackSprite = sprite,
                 isEnemy = enemy,
+                baseSpriteScale = spriteScale,
+                idleFramesFaceRight = idleFramesFaceRight,
+                attackFramesFaceRight = attackFramesFaceRight,
                 skillRange = skillRange,
                 speed = Mathf.Max(1f, speed),
                 maxHealth = Mathf.Max(1, maxHealth),
@@ -338,6 +416,7 @@ namespace SpiritHatchers.UI
                 attackTimer = 0f
             };
             UpdateCombatantLabel(combatant);
+            SetCombatantDefaultFacing(combatant);
             return combatant;
         }
 
@@ -410,7 +489,7 @@ namespace SpiritHatchers.UI
             for (int i = 0; i < attackers.Count; i++)
             {
                 CombatantView attacker = attackers[i];
-                if (attacker == null || !attacker.IsAlive || attacker.isAttacking)
+                if (attacker == null || !attacker.IsAlive || !attacker.HasCreatureVisual || attacker.isAttacking)
                 {
                     continue;
                 }
@@ -437,24 +516,76 @@ namespace SpiritHatchers.UI
         {
             attacker.isAttacking = true;
 
-            Vector3 startPosition = attacker.spriteImage.rectTransform.localPosition;
             if (attacker.skillRange == CreatureSkillRange.Melee)
             {
-                Vector3 lungePosition = GetMeleeContactPosition(attacker, target, startPosition);
-                yield return MoveSprite(attacker.spriteImage.rectTransform, startPosition, lungePosition, MeleeLungeDuration);
+                SetCombatantAttackFacing(attacker);
+                Vector3 currentPosition = attacker.spriteImage.rectTransform.localPosition;
+                if (attacker.meleeContactTarget != target || !attacker.hasMeleeContactPosition)
+                {
+                    attacker.meleeContactPosition = GetMeleeContactPosition(attacker, target, currentPosition);
+                    attacker.meleeContactTarget = target;
+                    attacker.hasMeleeContactPosition = true;
+                }
+
+                if ((attacker.meleeContactPosition - currentPosition).sqrMagnitude > 1f)
+                {
+                    yield return MoveSprite(attacker.spriteImage.rectTransform, currentPosition, attacker.meleeContactPosition, MeleeLungeDuration);
+                }
+
                 yield return PlayAttackFrames(attacker);
                 ApplyDamage(target, attacker.attackPower);
-                yield return MoveSprite(attacker.spriteImage.rectTransform, attacker.spriteImage.rectTransform.localPosition, startPosition, MeleeReturnDuration);
+                yield return PlayImpactFrames(attacker, target);
             }
             else
             {
+                SetCombatantAttackFacing(attacker);
                 yield return PlayAttackFrames(attacker);
+                yield return PlayProjectileFrames(attacker, target);
                 ApplyDamage(target, attacker.attackPower);
+                yield return PlayImpactFrames(attacker, target);
             }
 
-            attacker.spriteImage.rectTransform.localPosition = startPosition;
             attacker.animation.Play(attacker.idleFrames, attacker.fallbackSprite);
+            SetCombatantDefaultFacing(attacker);
             attacker.isAttacking = false;
+        }
+
+        private void SetCombatantDefaultFacing(CombatantView combatant)
+        {
+            if (combatant == null || combatant.spriteImage == null)
+            {
+                return;
+            }
+
+            SetCombatantFacing(combatant, combatant.idleFramesFaceRight);
+        }
+
+        private void SetCombatantAttackFacing(CombatantView combatant)
+        {
+            SetCombatantFacing(combatant, combatant.attackFramesFaceRight);
+        }
+
+        private void SetCombatantFacing(CombatantView combatant, bool sourceFacesRight)
+        {
+            if (combatant == null || combatant.spriteImage == null)
+            {
+                return;
+            }
+
+            float scale = Mathf.Max(0.1f, combatant.baseSpriteScale);
+            bool shouldFaceRight = !combatant.isEnemy;
+            float directionX = sourceFacesRight == shouldFaceRight ? 1f : -1f;
+            combatant.spriteImage.rectTransform.localScale = new Vector3(scale * directionX, scale, scale);
+        }
+
+        private Vector3 GetSpriteWorldCenter(RectTransform spriteTransform)
+        {
+            if (spriteTransform == null)
+            {
+                return Vector3.zero;
+            }
+
+            return spriteTransform.TransformPoint(spriteTransform.rect.center);
         }
 
         private Vector3 GetMeleeContactPosition(CombatantView attacker, CombatantView target, Vector3 attackerStartLocalPosition)
@@ -473,17 +604,73 @@ namespace SpiritHatchers.UI
                 return attackerStartLocalPosition;
             }
 
-            Vector3 targetWorldPosition = targetSprite.TransformPoint(targetSprite.rect.center);
-            Vector3 targetLocalPosition = attackerParent.InverseTransformPoint(targetWorldPosition);
-            Vector3 direction = targetLocalPosition - attackerStartLocalPosition;
-
-            if (direction.sqrMagnitude <= 0.01f)
+            Vector3 attackerWorldPosition = attackerParent.TransformPoint(attackerStartLocalPosition);
+            Vector3 targetWorldPosition = GetCombatantWorldCenter(target);
+            float horizontalDelta = targetWorldPosition.x - attackerWorldPosition.x;
+            if (Mathf.Abs(horizontalDelta) <= 0.01f)
             {
-                return attackerStartLocalPosition;
+                Vector3 targetLocalPosition = attackerParent.InverseTransformPoint(targetWorldPosition);
+                return new Vector3(attackerStartLocalPosition.x, targetLocalPosition.y, attackerStartLocalPosition.z);
             }
 
-            direction.Normalize();
-            return targetLocalPosition - direction * MeleeContactOffset;
+            float directionX = Mathf.Sign(horizontalDelta);
+            Vector3 direction = new Vector3(directionX, 0f, 0f);
+            float stopDistance = CalculateMeleeStopDistance(attackerSprite, targetSprite, attackerParent, direction);
+            Vector3 contactWorldPosition = new Vector3(
+                targetWorldPosition.x - directionX * stopDistance,
+                targetWorldPosition.y,
+                attackerWorldPosition.z);
+
+            Vector3 contactLocalPosition = attackerParent.InverseTransformPoint(contactWorldPosition);
+            return new Vector3(contactLocalPosition.x, contactLocalPosition.y, attackerStartLocalPosition.z);
+        }
+
+        private Vector3 GetCombatantWorldCenter(CombatantView combatant)
+        {
+            if (combatant == null)
+            {
+                return Vector3.zero;
+            }
+
+            RectTransform root = combatant.root != null ? combatant.root : combatant.spriteImage != null ? combatant.spriteImage.rectTransform : null;
+            if (root == null)
+            {
+                return Vector3.zero;
+            }
+
+            return root.TransformPoint(root.rect.center);
+        }
+
+        private float CalculateMeleeStopDistance(RectTransform attackerSprite, RectTransform targetSprite, RectTransform contactSpace, Vector3 direction)
+        {
+            if (attackerSprite == null || targetSprite == null || contactSpace == null)
+            {
+                return MeleeContactOffset;
+            }
+
+            float targetExtent = GetProjectedHalfExtent(targetSprite, contactSpace, direction);
+            return Mathf.Max(MeleeContactOffset, targetExtent + MeleeContactOffset);
+        }
+
+        private float GetProjectedHalfExtent(RectTransform rectTransform, RectTransform projectionSpace, Vector3 direction)
+        {
+            if (rectTransform == null || projectionSpace == null || direction.sqrMagnitude <= 0.01f)
+            {
+                return 0f;
+            }
+
+            Vector3 center = projectionSpace.InverseTransformPoint(rectTransform.TransformPoint(rectTransform.rect.center));
+            Vector3[] corners = new Vector3[4];
+            rectTransform.GetWorldCorners(corners);
+
+            float extent = 0f;
+            for (int i = 0; i < corners.Length; i++)
+            {
+                Vector3 localCorner = projectionSpace.InverseTransformPoint(corners[i]);
+                extent = Mathf.Max(extent, Mathf.Abs(Vector3.Dot(localCorner - center, direction)));
+            }
+
+            return extent;
         }
 
         private IEnumerator PlayAttackFrames(CombatantView attacker)
@@ -506,6 +693,124 @@ namespace SpiritHatchers.UI
                 }
 
                 yield return new WaitForSeconds(frameDuration);
+            }
+        }
+
+        private IEnumerator PlayImpactFrames(CombatantView attacker, CombatantView target)
+        {
+            if (attacker == null || attacker.impactFrames == null || attacker.impactFrames.Length == 0 || target == null || target.root == null)
+            {
+                yield break;
+            }
+
+            GameObject effectRoot = new GameObject("ImpactEffect", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            effectRoot.transform.SetParent(target.root, false);
+            effectRoot.transform.SetAsLastSibling();
+
+            RectTransform effectRect = effectRoot.GetComponent<RectTransform>();
+            effectRect.anchorMin = new Vector2(0.5f, 0.5f);
+            effectRect.anchorMax = new Vector2(0.5f, 0.5f);
+            effectRect.pivot = new Vector2(0.5f, 0.5f);
+            effectRect.anchoredPosition = new Vector2(0f, 0f);
+            effectRect.sizeDelta = new Vector2(ImpactEffectSize, ImpactEffectSize);
+            effectRect.localScale = Vector3.one;
+
+            Image effectImage = effectRoot.GetComponent<Image>();
+            effectImage.color = Color.white;
+            effectImage.preserveAspect = true;
+            effectImage.raycastTarget = false;
+
+            for (int i = 0; i < attacker.impactFrames.Length; i++)
+            {
+                if (effectImage == null)
+                {
+                    yield break;
+                }
+
+                effectImage.sprite = attacker.impactFrames[i];
+                effectImage.enabled = attacker.impactFrames[i] != null;
+                yield return new WaitForSeconds(ImpactFrameDuration);
+            }
+
+            if (effectRoot != null)
+            {
+                Destroy(effectRoot);
+            }
+        }
+
+        private IEnumerator PlayProjectileFrames(CombatantView attacker, CombatantView target)
+        {
+            if (attacker == null || attacker.projectileFrames == null || attacker.projectileFrames.Length == 0 || target == null || attacker.spriteImage == null || target.spriteImage == null)
+            {
+                yield break;
+            }
+
+            RectTransform battleRect = transform as RectTransform;
+            if (battleRect == null)
+            {
+                yield break;
+            }
+
+            GameObject projectileRoot = new GameObject("ProjectileEffect", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            projectileRoot.transform.SetParent(transform, false);
+            projectileRoot.transform.SetAsLastSibling();
+
+            RectTransform projectileRect = projectileRoot.GetComponent<RectTransform>();
+            projectileRect.anchorMin = new Vector2(0.5f, 0.5f);
+            projectileRect.anchorMax = new Vector2(0.5f, 0.5f);
+            projectileRect.pivot = new Vector2(0.5f, 0.5f);
+            projectileRect.sizeDelta = new Vector2(ProjectileSize, ProjectileSize);
+            projectileRect.localScale = Vector3.one;
+
+            Image projectileImage = projectileRoot.GetComponent<Image>();
+            projectileImage.color = Color.white;
+            projectileImage.preserveAspect = true;
+            projectileImage.raycastTarget = false;
+
+            Vector3 startLocal = battleRect.InverseTransformPoint(GetSpriteWorldCenter(attacker.spriteImage.rectTransform));
+            Vector3 endLocal = battleRect.InverseTransformPoint(GetSpriteWorldCenter(target.spriteImage.rectTransform));
+            Vector3 direction = endLocal - startLocal;
+            if (direction.sqrMagnitude > 0.01f)
+            {
+                startLocal += direction.normalized * ProjectileStartOffset;
+            }
+
+            float distance = Vector3.Distance(startLocal, endLocal);
+            float duration = Mathf.Clamp(distance / ProjectileSpeed, 0.22f, 0.55f);
+            float timer = 0f;
+
+            while (timer < duration)
+            {
+                if (projectileImage == null || projectileRect == null)
+                {
+                    yield break;
+                }
+
+                if (target != null && target.spriteImage != null)
+                {
+                    endLocal = battleRect.InverseTransformPoint(GetSpriteWorldCenter(target.spriteImage.rectTransform));
+                }
+
+                Vector3 currentDirection = endLocal - startLocal;
+                if (currentDirection.sqrMagnitude > 0.01f)
+                {
+                    float angle = Mathf.Atan2(currentDirection.y, currentDirection.x) * Mathf.Rad2Deg;
+                    projectileRect.localRotation = Quaternion.Euler(0f, 0f, angle);
+                }
+
+                int frameIndex = Mathf.FloorToInt(timer / ProjectileFrameDuration) % attacker.projectileFrames.Length;
+                projectileImage.sprite = attacker.projectileFrames[frameIndex];
+                projectileImage.enabled = attacker.projectileFrames[frameIndex] != null;
+
+                float t = Mathf.Clamp01(timer / Mathf.Max(0.01f, duration));
+                projectileRect.localPosition = Vector3.Lerp(startLocal, endLocal, t);
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            if (projectileRoot != null)
+            {
+                Destroy(projectileRoot);
             }
         }
 
@@ -542,6 +847,14 @@ namespace SpiritHatchers.UI
 
         private CombatantView GetFirstLivingCombatant(List<CombatantView> combatants)
         {
+            for (int i = 0; i < combatants.Count; i++)
+            {
+                if (combatants[i] != null && combatants[i].IsAlive && combatants[i].HasCreatureVisual)
+                {
+                    return combatants[i];
+                }
+            }
+
             for (int i = 0; i < combatants.Count; i++)
             {
                 if (combatants[i] != null && combatants[i].IsAlive)
@@ -656,8 +969,13 @@ namespace SpiritHatchers.UI
             public string displayName;
             public Sprite[] idleFrames;
             public Sprite[] attackFrames;
+            public Sprite[] projectileFrames;
+            public Sprite[] impactFrames;
             public Sprite fallbackSprite;
             public bool isEnemy;
+            public float baseSpriteScale;
+            public bool idleFramesFaceRight;
+            public bool attackFramesFaceRight;
             public CreatureSkillRange skillRange;
             public float speed;
             public int maxHealth;
@@ -665,8 +983,12 @@ namespace SpiritHatchers.UI
             public int attackPower;
             public float attackTimer;
             public bool isAttacking;
+            public bool hasMeleeContactPosition;
+            public Vector3 meleeContactPosition;
+            public CombatantView meleeContactTarget;
 
             public bool IsAlive => currentHealth > 0;
+            public bool HasCreatureVisual => fallbackSprite != null || (idleFrames != null && idleFrames.Length > 0);
         }
     }
 }

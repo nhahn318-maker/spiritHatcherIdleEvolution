@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1ebe56e6853850145b7d455ee265675b
+guid: 0e1e4e3f8e19442a85d41e9cd2690d20
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ember_fox_attack_sheet_v2_padded_384x512_0
+      name: ember_fox_attack_idle_fit_sheet_padded_384x512_0
       rect:
         serializedVersion: 2
         x: 0
@@ -118,7 +118,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ember_fox_attack_sheet_v2_padded_384x512_1
+      name: ember_fox_attack_idle_fit_sheet_padded_384x512_1
       rect:
         serializedVersion: 2
         x: 384
@@ -139,7 +139,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ember_fox_attack_sheet_v2_padded_384x512_2
+      name: ember_fox_attack_idle_fit_sheet_padded_384x512_2
       rect:
         serializedVersion: 2
         x: 768
@@ -160,7 +160,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ember_fox_attack_sheet_v2_padded_384x512_3
+      name: ember_fox_attack_idle_fit_sheet_padded_384x512_3
       rect:
         serializedVersion: 2
         x: 1152
@@ -181,7 +181,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ember_fox_attack_sheet_v2_padded_384x512_4
+      name: ember_fox_attack_idle_fit_sheet_padded_384x512_4
       rect:
         serializedVersion: 2
         x: 1536
@@ -202,7 +202,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ember_fox_attack_sheet_v2_padded_384x512_5
+      name: ember_fox_attack_idle_fit_sheet_padded_384x512_5
       rect:
         serializedVersion: 2
         x: 1920
@@ -223,7 +223,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ember_fox_attack_sheet_v2_padded_384x512_6
+      name: ember_fox_attack_idle_fit_sheet_padded_384x512_6
       rect:
         serializedVersion: 2
         x: 2304
@@ -244,7 +244,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ember_fox_attack_sheet_v2_padded_384x512_7
+      name: ember_fox_attack_idle_fit_sheet_padded_384x512_7
       rect:
         serializedVersion: 2
         x: 2688
@@ -275,14 +275,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      ember_fox_attack_sheet_v2_padded_384x512_0: 869347500
-      ember_fox_attack_sheet_v2_padded_384x512_1: 1416546400
-      ember_fox_attack_sheet_v2_padded_384x512_2: -1330709316
-      ember_fox_attack_sheet_v2_padded_384x512_3: -2000491072
-      ember_fox_attack_sheet_v2_padded_384x512_4: -361891351
-      ember_fox_attack_sheet_v2_padded_384x512_5: 1995888909
-      ember_fox_attack_sheet_v2_padded_384x512_6: -986992661
-      ember_fox_attack_sheet_v2_padded_384x512_7: -1065731041
+      ember_fox_attack_idle_fit_sheet_padded_384x512_0: 869347500
+      ember_fox_attack_idle_fit_sheet_padded_384x512_1: 1416546400
+      ember_fox_attack_idle_fit_sheet_padded_384x512_2: -1330709316
+      ember_fox_attack_idle_fit_sheet_padded_384x512_3: -2000491072
+      ember_fox_attack_idle_fit_sheet_padded_384x512_4: -361891351
+      ember_fox_attack_idle_fit_sheet_padded_384x512_5: 1995888909
+      ember_fox_attack_idle_fit_sheet_padded_384x512_6: -986992661
+      ember_fox_attack_idle_fit_sheet_padded_384x512_7: -1065731041
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

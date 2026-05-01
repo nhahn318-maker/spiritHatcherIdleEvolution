@@ -25,6 +25,10 @@ namespace SpiritHatchers.Data
         public CreatureSkillRange skillRange = CreatureSkillRange.Melee;
         [Min(0.1f)] public float skillPowerMultiplier = 1f;
 
+        [Header("Animation Facing")]
+        public bool idleFramesFaceRight = true;
+        public bool attackFramesFaceRight = true;
+
         [Header("Skill Visuals")]
         public Sprite[] attackFrames;
         public Sprite[] projectileFrames;

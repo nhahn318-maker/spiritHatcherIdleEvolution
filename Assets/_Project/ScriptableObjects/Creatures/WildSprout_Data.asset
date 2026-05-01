@@ -18,26 +18,49 @@ MonoBehaviour:
   rarity: 0
   basePower: 8
   speed: 45
-  skillName: Sprout Tackle
-  skillRange: 0
+  skillName: Seed Spit
+  skillRange: 1
   skillPowerMultiplier: 1
-  attackFrames: []
-  projectileFrames: []
-  impactFrames: []
+  idleFramesFaceRight: 1
+  attackFramesFaceRight: 1
+  attackFrames:
+  - {fileID: -1688192458, guid: ce6c98644e0f9674e8208c7ed9101e62, type: 3}
+  - {fileID: 537031074, guid: ce6c98644e0f9674e8208c7ed9101e62, type: 3}
+  - {fileID: 1676097124, guid: ce6c98644e0f9674e8208c7ed9101e62, type: 3}
+  - {fileID: -564130025, guid: ce6c98644e0f9674e8208c7ed9101e62, type: 3}
+  - {fileID: 549658638, guid: ce6c98644e0f9674e8208c7ed9101e62, type: 3}
+  - {fileID: -1766359100, guid: ce6c98644e0f9674e8208c7ed9101e62, type: 3}
+  - {fileID: 919713490, guid: ce6c98644e0f9674e8208c7ed9101e62, type: 3}
+  - {fileID: 832498947, guid: ce6c98644e0f9674e8208c7ed9101e62, type: 3}
+  projectileFrames:
+  - {fileID: 180291432, guid: 9cf7a2d716a3a2144a64687bc7b12cbe, type: 3}
+  - {fileID: -1010360537, guid: 9cf7a2d716a3a2144a64687bc7b12cbe, type: 3}
+  - {fileID: 1191183688, guid: 9cf7a2d716a3a2144a64687bc7b12cbe, type: 3}
+  - {fileID: 2093338442, guid: 9cf7a2d716a3a2144a64687bc7b12cbe, type: 3}
+  - {fileID: 787952214, guid: 9cf7a2d716a3a2144a64687bc7b12cbe, type: 3}
+  - {fileID: 498788183, guid: 9cf7a2d716a3a2144a64687bc7b12cbe, type: 3}
+  impactFrames:
+  - {fileID: 180291432, guid: 738a4aab2b864ed0b6909b63cdd481b7, type: 3}
+  - {fileID: -1010360537, guid: 738a4aab2b864ed0b6909b63cdd481b7, type: 3}
+  - {fileID: 1191183688, guid: 738a4aab2b864ed0b6909b63cdd481b7, type: 3}
+  - {fileID: 2093338442, guid: 738a4aab2b864ed0b6909b63cdd481b7, type: 3}
+  - {fileID: 787952214, guid: 738a4aab2b864ed0b6909b63cdd481b7, type: 3}
+  - {fileID: 498788183, guid: 738a4aab2b864ed0b6909b63cdd481b7, type: 3}
   forms:
   - formIndex: 0
     formName: Wild Sprout
     sprite: {fileID: 21300000, guid: 4e3ae9d48bf03f44a86043d93c655a96, type: 3}
     idleFrames:
-    - {fileID: 1061395759, guid: f6e55d21616200c44afa323f307f2c6f, type: 3}
-    - {fileID: 713211540, guid: f6e55d21616200c44afa323f307f2c6f, type: 3}
-    - {fileID: 1813530357, guid: f6e55d21616200c44afa323f307f2c6f, type: 3}
-    - {fileID: -447040239, guid: f6e55d21616200c44afa323f307f2c6f, type: 3}
-    - {fileID: -797394700, guid: f6e55d21616200c44afa323f307f2c6f, type: 3}
-    - {fileID: 1365367231, guid: f6e55d21616200c44afa323f307f2c6f, type: 3}
-    - {fileID: -1756337635, guid: f6e55d21616200c44afa323f307f2c6f, type: 3}
-    - {fileID: -1796659939, guid: f6e55d21616200c44afa323f307f2c6f, type: 3}
+    - {fileID: 1083305805, guid: 83cb39343c639ed48aeb083cbf1fdf8a, type: 3}
+    - {fileID: 1124958075, guid: 83cb39343c639ed48aeb083cbf1fdf8a, type: 3}
+    - {fileID: 503947050, guid: 83cb39343c639ed48aeb083cbf1fdf8a, type: 3}
+    - {fileID: 1105343105, guid: 83cb39343c639ed48aeb083cbf1fdf8a, type: 3}
+    - {fileID: -1791788619, guid: 83cb39343c639ed48aeb083cbf1fdf8a, type: 3}
+    - {fileID: 1568754624, guid: 83cb39343c639ed48aeb083cbf1fdf8a, type: 3}
+    - {fileID: 1055109519, guid: 83cb39343c639ed48aeb083cbf1fdf8a, type: 3}
+    - {fileID: -468595612, guid: 83cb39343c639ed48aeb083cbf1fdf8a, type: 3}
     displayScale: 0.85
+    battleVisualOffset: {x: 0, y: 0}
     requiredLevel: 1
     requiredFood: 0
     requiredCrystal: 0

@@ -51,6 +51,14 @@ Creature sprites should be:
 - Suitable for Unity 2D
 - Generated on a flat chroma-key background first, then converted to true PNG alpha
 
+Creature battle animation sheets should also follow a shared ground baseline:
+
+- Creatures may have different visible heights and widths.
+- Do not force every creature to be the same size.
+- For 384x512 animation cells, the lowest feet/root/contact point should sit around `y = 472-474` from the top of the cell.
+- Keep that feet/root/contact point stable across every frame of the same animation.
+- Do not visually center a creature in a way that makes it float above or sink below the shared battle ground line.
+
 Creature sprites should not be:
 
 - Realistic
@@ -70,6 +78,9 @@ Sprite generation note:
 - Use `#ff00ff` chroma-key for green or nature creatures.
 - Use `#00ff00` chroma-key for non-green creatures.
 - Always validate the final imported sprite has real alpha, not an RGB image with a checkerboard background.
+- Use short final filenames in creature folders, such as `form.png`, `idle.png`, `attack.png`, `attack_seed_spit.png`, `flame.png`, and `flame_idle.png`.
+- Do not keep `raw`, `transparent`, `padded`, or generated hash filenames in final creature folders unless Unity references them.
+- When renaming a Unity-referenced image, move the `.png` and `.png.meta` together so the GUID remains stable.
 
 ## 4. Background Style
 
