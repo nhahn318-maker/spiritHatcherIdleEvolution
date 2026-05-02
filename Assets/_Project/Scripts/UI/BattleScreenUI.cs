@@ -20,10 +20,13 @@ namespace SpiritHatchers.UI
         private const float MeleeLungeDuration = 0.34f;
         private const float ImpactFrameDuration = 0.045f;
         private const float ImpactEffectSize = 152f;
+        private const float OrbitHitEffectFrameDuration = 0.08f;
+        private const float OrbitHitEffectSize = 180f;
         private const float ProjectileFrameDuration = 0.045f;
         private const float ProjectileSize = 76f;
         private const float ProjectileSpeed = 900f;
         private const float ProjectileStartOffset = 36f;
+        private const float OrbitEffectScale = 1.65f;
 
         [SerializeField] private CreatureDatabase creatureDatabase;
         [SerializeField] private Image backgroundImage;
@@ -254,6 +257,8 @@ namespace SpiritHatchers.UI
                     enemyAttackFrames,
                     enemyCreatureData != null ? enemyCreatureData.projectileFrames : null,
                     enemyCreatureData != null ? enemyCreatureData.impactFrames : null,
+                    enemyForm != null ? enemyForm.orbitEffectFrames : null,
+                    enemyForm != null ? enemyForm.orbitHitEffectFrames : null,
                     enemyCreatureData != null ? enemyCreatureData.skillRange : CreatureSkillRange.Melee,
                     enemyCreatureData == null || enemyCreatureData.idleFramesFaceRight,
                     enemyCreatureData == null || enemyCreatureData.attackFramesFaceRight,
@@ -312,6 +317,8 @@ namespace SpiritHatchers.UI
                         attackFrames,
                         staticData != null ? staticData.projectileFrames : null,
                         staticData != null ? staticData.impactFrames : null,
+                        form != null ? form.orbitEffectFrames : null,
+                        form != null ? form.orbitHitEffectFrames : null,
                         staticData != null ? staticData.skillRange : CreatureSkillRange.Melee,
                         staticData == null || staticData.idleFramesFaceRight,
                         staticData == null || staticData.attackFramesFaceRight,
@@ -359,6 +366,8 @@ namespace SpiritHatchers.UI
             Sprite[] attackFrames = null,
             Sprite[] projectileFrames = null,
             Sprite[] impactFrames = null,
+            Sprite[] orbitEffectFrames = null,
+            Sprite[] orbitHitEffectFrames = null,
             CreatureSkillRange skillRange = CreatureSkillRange.Melee,
             bool idleFramesFaceRight = true,
             bool attackFramesFaceRight = true,
@@ -379,9 +388,13 @@ namespace SpiritHatchers.UI
             layout.flexibleWidth = 0f;
             layout.flexibleHeight = 0f;
 
-            Image spriteImage = CreateImage(root.transform, "Sprite", fallbackColor);
-            SetAnchored(spriteImage.rectTransform, new Vector2(0f, 0.12f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
-            spriteImage.rectTransform.anchoredPosition = visualOffset;
+            GameObject visualRootObject = new GameObject("VisualRoot", typeof(RectTransform));
+            visualRootObject.transform.SetParent(root.transform, false);
+            RectTransform visualRoot = visualRootObject.GetComponent<RectTransform>();
+            SetAnchored(visualRoot, new Vector2(0f, 0.12f), new Vector2(1f, 1f), visualOffset, Vector2.zero);
+
+            Image spriteImage = CreateImage(visualRoot, "Sprite", fallbackColor);
+            StretchFull(spriteImage.rectTransform);
             spriteImage.sprite = sprite;
             spriteImage.color = sprite != null ? Color.white : fallbackColor;
             spriteImage.preserveAspect = true;
@@ -391,20 +404,42 @@ namespace SpiritHatchers.UI
             CreatureSpriteAnimationUI animation = spriteImage.gameObject.AddComponent<CreatureSpriteAnimationUI>();
             animation.Play(idleFrames, sprite);
 
+            Image orbitEffectImage = null;
+            CreatureSpriteAnimationUI orbitEffectAnimation = null;
+            if (orbitEffectFrames != null && orbitEffectFrames.Length > 0)
+            {
+                orbitEffectImage = CreateImage(visualRoot, "OrbitEffect", Color.white);
+                StretchFull(orbitEffectImage.rectTransform);
+                orbitEffectImage.rectTransform.anchoredPosition = Vector2.zero;
+                float orbitScale = spriteScale * OrbitEffectScale;
+                orbitEffectImage.rectTransform.localScale = new Vector3(orbitScale, orbitScale, 1f);
+                orbitEffectImage.preserveAspect = true;
+                orbitEffectImage.raycastTarget = false;
+                orbitEffectImage.transform.SetAsFirstSibling();
+
+                orbitEffectAnimation = orbitEffectImage.gameObject.AddComponent<CreatureSpriteAnimationUI>();
+                orbitEffectAnimation.Play(orbitEffectFrames, null);
+            }
+
             TMP_Text label = CreateText(root.transform, "Name", labelText, 13f, TextAlignmentOptions.Center);
             SetAnchored(label.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.18f), Vector2.zero, Vector2.zero);
 
             CombatantView combatant = new CombatantView
             {
                 root = root.GetComponent<RectTransform>(),
+                visualRoot = visualRoot,
                 spriteImage = spriteImage,
                 animation = animation,
+                orbitEffectImage = orbitEffectImage,
+                orbitEffectAnimation = orbitEffectAnimation,
                 nameLabel = label,
                 displayName = labelText,
                 idleFrames = idleFrames,
                 attackFrames = attackFrames,
                 projectileFrames = projectileFrames,
                 impactFrames = impactFrames,
+                orbitEffectFrames = orbitEffectFrames,
+                orbitHitEffectFrames = orbitHitEffectFrames,
                 fallbackSprite = sprite,
                 isEnemy = enemy,
                 baseSpriteScale = spriteScale,
@@ -526,7 +561,8 @@ namespace SpiritHatchers.UI
             if (attacker.skillRange == CreatureSkillRange.Melee)
             {
                 SetCombatantAttackFacing(attacker);
-                Vector3 currentPosition = attacker.spriteImage.rectTransform.localPosition;
+                RectTransform attackerMoveRoot = attacker.visualRoot != null ? attacker.visualRoot : attacker.spriteImage.rectTransform;
+                Vector3 currentPosition = attackerMoveRoot.localPosition;
                 if (attacker.meleeContactTarget != target || !attacker.hasMeleeContactPosition)
                 {
                     attacker.meleeContactPosition = GetMeleeContactPosition(attacker, target, currentPosition);
@@ -536,12 +572,13 @@ namespace SpiritHatchers.UI
 
                 if ((attacker.meleeContactPosition - currentPosition).sqrMagnitude > 1f)
                 {
-                    yield return MoveSprite(attacker.spriteImage.rectTransform, currentPosition, attacker.meleeContactPosition, MeleeLungeDuration);
+                    yield return MoveSprite(attackerMoveRoot, currentPosition, attacker.meleeContactPosition, MeleeLungeDuration);
                 }
 
                 yield return PlayAttackFrames(attacker);
                 ApplyDamage(target, attacker.attackPower);
                 yield return PlayImpactFrames(attacker, target);
+                PlayOrbitHitEffect(attacker, target);
             }
             else
             {
@@ -550,6 +587,7 @@ namespace SpiritHatchers.UI
                 yield return PlayProjectileFrames(attacker, target);
                 ApplyDamage(target, attacker.attackPower);
                 yield return PlayImpactFrames(attacker, target);
+                PlayOrbitHitEffect(attacker, target);
             }
 
             attacker.animation.Play(attacker.idleFrames, attacker.fallbackSprite);
@@ -603,7 +641,8 @@ namespace SpiritHatchers.UI
             }
 
             RectTransform attackerSprite = attacker.spriteImage.rectTransform;
-            RectTransform attackerParent = attackerSprite.parent as RectTransform;
+            RectTransform attackerMoveRoot = attacker.visualRoot != null ? attacker.visualRoot : attackerSprite;
+            RectTransform attackerParent = attackerMoveRoot.parent as RectTransform;
             RectTransform targetSprite = target.spriteImage.rectTransform;
 
             if (attackerParent == null)
@@ -705,20 +744,26 @@ namespace SpiritHatchers.UI
 
         private IEnumerator PlayImpactFrames(CombatantView attacker, CombatantView target)
         {
-            if (attacker == null || attacker.impactFrames == null || attacker.impactFrames.Length == 0 || target == null || target.root == null)
+            if (attacker == null || attacker.impactFrames == null || attacker.impactFrames.Length == 0 || target == null || target.spriteImage == null)
+            {
+                yield break;
+            }
+
+            RectTransform battleRect = transform as RectTransform;
+            if (battleRect == null)
             {
                 yield break;
             }
 
             GameObject effectRoot = new GameObject("ImpactEffect", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-            effectRoot.transform.SetParent(target.root, false);
+            effectRoot.transform.SetParent(transform, false);
             effectRoot.transform.SetAsLastSibling();
 
             RectTransform effectRect = effectRoot.GetComponent<RectTransform>();
             effectRect.anchorMin = new Vector2(0.5f, 0.5f);
             effectRect.anchorMax = new Vector2(0.5f, 0.5f);
             effectRect.pivot = new Vector2(0.5f, 0.5f);
-            effectRect.anchoredPosition = new Vector2(0f, 0f);
+            effectRect.localPosition = battleRect.InverseTransformPoint(GetSpriteWorldCenter(target.spriteImage.rectTransform));
             effectRect.sizeDelta = new Vector2(ImpactEffectSize, ImpactEffectSize);
             effectRect.localScale = Vector3.one;
 
@@ -737,6 +782,60 @@ namespace SpiritHatchers.UI
                 effectImage.sprite = attacker.impactFrames[i];
                 effectImage.enabled = attacker.impactFrames[i] != null;
                 yield return new WaitForSeconds(ImpactFrameDuration);
+            }
+
+            if (effectRoot != null)
+            {
+                Destroy(effectRoot);
+            }
+        }
+
+        private void PlayOrbitHitEffect(CombatantView attacker, CombatantView target)
+        {
+            if (attacker == null || attacker.orbitHitEffectFrames == null || attacker.orbitHitEffectFrames.Length == 0 || target == null || target.spriteImage == null)
+            {
+                return;
+            }
+
+            StartCoroutine(PlayOrbitHitEffectFrames(attacker, target));
+        }
+
+        private IEnumerator PlayOrbitHitEffectFrames(CombatantView attacker, CombatantView target)
+        {
+            RectTransform battleRect = transform as RectTransform;
+            if (battleRect == null)
+            {
+                yield break;
+            }
+
+            GameObject effectRoot = new GameObject("OrbitHitEffect", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            effectRoot.transform.SetParent(transform, false);
+            effectRoot.transform.SetAsLastSibling();
+
+            RectTransform effectRect = effectRoot.GetComponent<RectTransform>();
+            effectRect.anchorMin = new Vector2(0.5f, 0.5f);
+            effectRect.anchorMax = new Vector2(0.5f, 0.5f);
+            effectRect.pivot = new Vector2(0.5f, 0.5f);
+            Vector3 targetCenter = GetSpriteWorldCenter(target.spriteImage.rectTransform);
+            effectRect.localPosition = battleRect.InverseTransformPoint(targetCenter);
+            effectRect.sizeDelta = new Vector2(OrbitHitEffectSize, OrbitHitEffectSize);
+            effectRect.localScale = Vector3.one;
+
+            Image effectImage = effectRoot.GetComponent<Image>();
+            effectImage.color = Color.white;
+            effectImage.preserveAspect = true;
+            effectImage.raycastTarget = false;
+
+            for (int i = 0; i < attacker.orbitHitEffectFrames.Length; i++)
+            {
+                if (effectImage == null)
+                {
+                    yield break;
+                }
+
+                effectImage.sprite = attacker.orbitHitEffectFrames[i];
+                effectImage.enabled = attacker.orbitHitEffectFrames[i] != null;
+                yield return new WaitForSeconds(OrbitHitEffectFrameDuration);
             }
 
             if (effectRoot != null)
@@ -848,6 +947,10 @@ namespace SpiritHatchers.UI
             if (!target.IsAlive)
             {
                 target.spriteImage.color = new Color(1f, 1f, 1f, 0.28f);
+                if (target.orbitEffectImage != null)
+                {
+                    target.orbitEffectImage.color = new Color(1f, 1f, 1f, 0.28f);
+                }
                 target.animation.Stop(target.fallbackSprite);
             }
         }
@@ -970,14 +1073,19 @@ namespace SpiritHatchers.UI
         private class CombatantView
         {
             public RectTransform root;
+            public RectTransform visualRoot;
             public Image spriteImage;
             public CreatureSpriteAnimationUI animation;
+            public Image orbitEffectImage;
+            public CreatureSpriteAnimationUI orbitEffectAnimation;
             public TMP_Text nameLabel;
             public string displayName;
             public Sprite[] idleFrames;
             public Sprite[] attackFrames;
             public Sprite[] projectileFrames;
             public Sprite[] impactFrames;
+            public Sprite[] orbitEffectFrames;
+            public Sprite[] orbitHitEffectFrames;
             public Sprite fallbackSprite;
             public bool isEnemy;
             public float baseSpriteScale;

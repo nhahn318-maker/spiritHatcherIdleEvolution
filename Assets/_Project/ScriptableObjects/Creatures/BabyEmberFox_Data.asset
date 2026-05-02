@@ -54,6 +54,8 @@ MonoBehaviour:
     - {fileID: 1995888909, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
     - {fileID: -986992661, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
     - {fileID: -1065731041, guid: 0e1e4e3f8e19442a85d41e9cd2690d20, type: 3}
+    orbitEffectFrames: []
+    orbitHitEffectFrames: []
     displayScale: 0.85
     battleVisualOffset: {x: 0, y: 0}
     requiredLevel: 1
@@ -81,6 +83,25 @@ MonoBehaviour:
     - {fileID: 1211629616, guid: 1ef465206eee4282913de7d586e7f034, type: 3}
     - {fileID: -170102769, guid: 1ef465206eee4282913de7d586e7f034, type: 3}
     - {fileID: 1391758999, guid: 1ef465206eee4282913de7d586e7f034, type: 3}
+    orbitEffectFrames:
+    - {fileID: 110000001, guid: 480be722319d4451940013944dc2106f, type: 3}
+    - {fileID: 110000002, guid: 480be722319d4451940013944dc2106f, type: 3}
+    - {fileID: 110000003, guid: 480be722319d4451940013944dc2106f, type: 3}
+    - {fileID: 110000004, guid: 480be722319d4451940013944dc2106f, type: 3}
+    - {fileID: 110000005, guid: 480be722319d4451940013944dc2106f, type: 3}
+    - {fileID: 110000006, guid: 480be722319d4451940013944dc2106f, type: 3}
+    - {fileID: 110000007, guid: 480be722319d4451940013944dc2106f, type: 3}
+    - {fileID: 110000008, guid: 480be722319d4451940013944dc2106f, type: 3}
+    - {fileID: 110000009, guid: 480be722319d4451940013944dc2106f, type: 3}
+    - {fileID: 110000010, guid: 480be722319d4451940013944dc2106f, type: 3}
+    - {fileID: 110000011, guid: 480be722319d4451940013944dc2106f, type: 3}
+    orbitHitEffectFrames:
+    - {fileID: 120000001, guid: 91abdc3895d94c27bd1b30e6aa338eed, type: 3}
+    - {fileID: 120000002, guid: 91abdc3895d94c27bd1b30e6aa338eed, type: 3}
+    - {fileID: 120000003, guid: 91abdc3895d94c27bd1b30e6aa338eed, type: 3}
+    - {fileID: 120000004, guid: 91abdc3895d94c27bd1b30e6aa338eed, type: 3}
+    - {fileID: 120000005, guid: 91abdc3895d94c27bd1b30e6aa338eed, type: 3}
+    - {fileID: 120000006, guid: 91abdc3895d94c27bd1b30e6aa338eed, type: 3}
     displayScale: 1
     battleVisualOffset: {x: 0, y: 0}
     requiredLevel: 10
@@ -100,6 +121,8 @@ MonoBehaviour:
     - {fileID: 142962502, guid: a0eb08b593c118944b5524eac9bffc99, type: 3}
     - {fileID: -391603133, guid: a0eb08b593c118944b5524eac9bffc99, type: 3}
     attackFrames: []
+    orbitEffectFrames: []
+    orbitHitEffectFrames: []
     displayScale: 1.3
     battleVisualOffset: {x: 0, y: 0}
     requiredLevel: 25

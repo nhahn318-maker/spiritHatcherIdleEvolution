@@ -11,6 +11,8 @@ namespace SpiritHatchers.Data
         public Sprite sprite;
         public Sprite[] idleFrames;
         public Sprite[] attackFrames;
+        public Sprite[] orbitEffectFrames;
+        public Sprite[] orbitHitEffectFrames;
         [Min(0.1f)] public float displayScale = 1f;
         public Vector2 battleVisualOffset;
 
