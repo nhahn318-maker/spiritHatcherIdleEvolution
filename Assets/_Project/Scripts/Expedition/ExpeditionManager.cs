@@ -433,10 +433,12 @@ namespace SpiritHatchers.Expedition
 
             CreatureElement creatureElement = creatureStaticData != null ? creatureStaticData.element : CreatureElement.Fire;
             string creatureName = creatureStaticData != null ? creatureStaticData.creatureName : creature.creatureId;
-            string skillName = creatureStaticData != null && !string.IsNullOrEmpty(creatureStaticData.skillName)
-                ? creatureStaticData.skillName
+            CreatureFormData creatureForm = creatureStaticData != null ? creatureStaticData.GetFormByIndex(creature.currentFormIndex) : null;
+            CreatureSkillData activeSkill = creatureStaticData != null ? creatureStaticData.GetActiveSkill(creatureForm) : null;
+            string skillName = activeSkill != null && !string.IsNullOrEmpty(activeSkill.skillName)
+                ? activeSkill.skillName
                 : "Spirit Strike";
-            float skillMultiplier = creatureStaticData != null ? Mathf.Max(0.1f, creatureStaticData.skillPowerMultiplier) : 1f;
+            float skillMultiplier = activeSkill != null ? Mathf.Max(0.1f, activeSkill.powerMultiplier) : 1f;
 
             int creatureHealth = Mathf.Max(30, creaturePower * 3);
             int maxCreatureHealth = creatureHealth;

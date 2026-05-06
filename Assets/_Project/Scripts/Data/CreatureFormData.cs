@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SpiritHatchers.Data
@@ -10,6 +11,16 @@ namespace SpiritHatchers.Data
         public string formName;
         public Sprite sprite;
         public Sprite[] idleFrames;
+
+        [Header("Skill Unlocks")]
+        public List<CreatureSkillData> unlockedSkills = new List<CreatureSkillData>();
+
+        [Header("Ultimate Skill")]
+        public CreatureSkillData ultimateSkill;
+        [Min(1f)] public float ultimateRageRequired = 100f;
+        [Min(1f)] public float ultimateImpactEffectSize = 360f;
+
+        [Header("Legacy Form Skill Visual Overrides")]
         public Sprite[] attackFrames;
         public Sprite[] orbitEffectFrames;
         public Sprite[] orbitHitEffectFrames;

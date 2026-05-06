@@ -227,11 +227,10 @@ namespace SpiritHatchers.UI
         {
             string name = staticData != null ? staticData.creatureName : creature.creatureId;
             string rarity = staticData != null ? staticData.rarity.ToString() : "Unknown";
-            string skill = staticData != null && !string.IsNullOrEmpty(staticData.skillName)
-                ? staticData.skillName
-                : "Spirit Strike";
+            CreatureFormData form = staticData != null ? staticData.GetFormByIndex(creature.currentFormIndex) : null;
+            string skill = staticData != null ? staticData.GetUnlockedSkillNames(form) : "Spirit Strike";
             int power = expeditionManager != null ? expeditionManager.GetCreaturePower(creature) : 0;
-            return $"{name}\n{rarity}  Lv. {Mathf.Max(1, creature.level)}  Power: {power}  Skill: {skill}";
+            return $"{name}\n{rarity}  Lv. {Mathf.Max(1, creature.level)}  Power: {power}  Skills: {skill}";
         }
 
         private void RefreshSelectedCreaturePreview(PlayerCreatureData creature)

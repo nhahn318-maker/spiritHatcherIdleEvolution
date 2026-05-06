@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a0eb08b593c118944b5524eac9bffc99
+guid: 5c0936f6d1d7427c9f3e2ca164db6343
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_0
+      name: inferno_attack_0
       rect:
         serializedVersion: 2
         x: 0
@@ -111,14 +111,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 204fbe855208afe44b224b4db83e6b91
-      internalID: -246590640
+      spriteID: 40b78f20006ba1d478de5b2234fb1935
+      internalID: 174081796
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_1
+      name: inferno_attack_1
       rect:
         serializedVersion: 2
         x: 384
@@ -132,14 +132,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fb553755e2b703e4c95a01b058590165
-      internalID: 565360164
+      spriteID: fa6b491ef75acac498f94d9f85b7f629
+      internalID: -937057159
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_2
+      name: inferno_attack_2
       rect:
         serializedVersion: 2
         x: 768
@@ -153,14 +153,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: df0bc1bf7c547d545b4bccaff0ee9117
-      internalID: -89462376
+      spriteID: 02c7eef8188325245996ef604ea4c7fb
+      internalID: -117302084
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_3
+      name: inferno_attack_3
       rect:
         serializedVersion: 2
         x: 1152
@@ -174,14 +174,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 13c31f9d46356364289265ca9fcbe2d7
-      internalID: -1599070110
+      spriteID: e364717982fd2944d974dfcb84d9a901
+      internalID: 195989223
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_4
+      name: inferno_attack_4
       rect:
         serializedVersion: 2
         x: 1536
@@ -195,14 +195,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6eb2706366f230f45a16897572c344f6
-      internalID: 975510926
+      spriteID: ed4451a3f5d445e4db23908cef0d9fc1
+      internalID: 71669734
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_5
+      name: inferno_attack_5
       rect:
         serializedVersion: 2
         x: 1920
@@ -216,14 +216,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b686863d5ff75324689c92ec3b6c6e0a
-      internalID: 1273995639
+      spriteID: 0dd5cb06ad4b4e949bf52bd6f80ed3e1
+      internalID: 1211629616
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_6
+      name: inferno_attack_6
       rect:
         serializedVersion: 2
         x: 2304
@@ -237,14 +237,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 60093c61c9aaeab47a4a9477f6309aad
-      internalID: 142962502
+      spriteID: b19b5bce76803bb4cbe9b272b92233cc
+      internalID: -170102769
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_7
+      name: inferno_attack_7
       rect:
         serializedVersion: 2
         x: 2688
@@ -258,8 +258,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2abca22da4146f04f9001e0e0a8c3abb
-      internalID: -391603133
+      spriteID: 3a797b29e477bee46a68e5210afccfd5
+      internalID: 1391758999
       vertices: []
       indices: 
       edges: []
@@ -275,14 +275,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      inferno_fox_idle_reference_padded_384x512_0: -246590640
-      inferno_fox_idle_reference_padded_384x512_1: 565360164
-      inferno_fox_idle_reference_padded_384x512_2: -89462376
-      inferno_fox_idle_reference_padded_384x512_3: -1599070110
-      inferno_fox_idle_reference_padded_384x512_4: 975510926
-      inferno_fox_idle_reference_padded_384x512_5: 1273995639
-      inferno_fox_idle_reference_padded_384x512_6: 142962502
-      inferno_fox_idle_reference_padded_384x512_7: -391603133
+      inferno_attack_0: 174081796
+      inferno_attack_1: -937057159
+      inferno_attack_2: -117302084
+      inferno_attack_3: 195989223
+      inferno_attack_4: 71669734
+      inferno_attack_5: 1211629616
+      inferno_attack_6: -170102769
+      inferno_attack_7: 1391758999
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

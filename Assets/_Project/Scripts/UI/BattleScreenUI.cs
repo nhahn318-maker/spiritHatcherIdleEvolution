@@ -21,12 +21,20 @@ namespace SpiritHatchers.UI
         private const float ImpactFrameDuration = 0.045f;
         private const float ImpactEffectSize = 152f;
         private const float OrbitHitEffectFrameDuration = 0.08f;
-        private const float OrbitHitEffectSize = 180f;
+        private const float OrbitHitEffectSize = 220f;
         private const float ProjectileFrameDuration = 0.045f;
         private const float ProjectileSize = 76f;
         private const float ProjectileSpeed = 900f;
         private const float ProjectileStartOffset = 36f;
         private const float OrbitEffectScale = 1.65f;
+        private const float DefaultOrbitOrbSize = 34f;
+        private const float DefaultOrbitOrbRadius = 44f;
+        private const float DefaultOrbitOrbSpeedDegrees = 180f;
+        private const float DefaultOrbitOrbHitRadius = 30f;
+        private const float DefaultOrbitOrbHitCooldown = 0.55f;
+        private const float UltimateRageGainOnAttack = 34f;
+        private const float UltimateRageGainWhenHit = 22f;
+        private const float UltimateFrameDuration = 0.055f;
 
         [SerializeField] private CreatureDatabase creatureDatabase;
         [SerializeField] private Image backgroundImage;
@@ -34,6 +42,7 @@ namespace SpiritHatchers.UI
         [SerializeField] private Transform enemyRoot;
         [SerializeField] private Transform playerRoot;
         [SerializeField] private Button closeButton;
+        [SerializeField] private bool debugClickUltimate = true;
 
         private readonly List<GameObject> spawnedViews = new List<GameObject>();
         private readonly List<CombatantView> playerCombatants = new List<CombatantView>();
@@ -238,11 +247,12 @@ namespace SpiritHatchers.UI
                 CreatureFormData enemyForm = GetDefaultCreatureForm(enemyCreatureData);
                 Sprite enemySprite = enemyForm != null && enemyForm.sprite != null ? enemyForm.sprite : enemy.sprite;
                 Sprite[] enemyIdleFrames = enemyForm != null ? enemyForm.idleFrames : null;
-                Sprite[] enemyAttackFrames = GetFormOverrideFrames(enemyForm != null ? enemyForm.attackFrames : null, enemyCreatureData != null ? enemyCreatureData.attackFrames : null);
+                CreatureSkillData enemySkill = enemyCreatureData != null ? enemyCreatureData.GetActiveSkill(enemyForm) : null;
+                CreatureSkillData enemyOrbitSkill = enemyCreatureData != null ? enemyCreatureData.GetActiveOrbitSkill(enemyForm) : null;
                 float enemyDisplayScale = enemyForm != null ? enemyForm.displayScale : 1f;
                 Vector2 enemyVisualOffset = enemyForm != null ? enemyForm.battleVisualOffset : Vector2.zero;
                 int maxHealth = Mathf.Max(1, enemy.maxHealth);
-                int attackPower = Mathf.Max(1, enemy.attack);
+                int attackPower = Mathf.Max(1, Mathf.RoundToInt(enemy.attack * (enemySkill != null ? Mathf.Max(0.1f, enemySkill.powerMultiplier) : 1f)));
 
                 CombatantView combatant = CreateCombatant(
                     enemyRoot,
@@ -254,17 +264,30 @@ namespace SpiritHatchers.UI
                     enemyDisplayScale,
                     enemyVisualOffset,
                     enemyIdleFrames,
-                    enemyAttackFrames,
-                    enemyCreatureData != null ? enemyCreatureData.projectileFrames : null,
-                    enemyCreatureData != null ? enemyCreatureData.impactFrames : null,
-                    enemyForm != null ? enemyForm.orbitEffectFrames : null,
-                    enemyForm != null ? enemyForm.orbitHitEffectFrames : null,
-                    enemyCreatureData != null ? enemyCreatureData.skillRange : CreatureSkillRange.Melee,
+                    enemySkill != null ? enemySkill.attackFrames : null,
+                    enemySkill != null ? enemySkill.projectileFrames : null,
+                    enemySkill != null ? enemySkill.impactFrames : null,
+                    enemyForm != null ? enemyForm.ultimateSkill : null,
+                    enemyForm != null ? enemyForm.ultimateRageRequired : 100f,
+                    enemyForm != null ? enemyForm.ultimateImpactEffectSize : 360f,
+                    enemyOrbitSkill != null ? enemyOrbitSkill.orbitEffectFrames : null,
+                    enemyOrbitSkill != null ? enemyOrbitSkill.orbitHitEffectFrames : null,
+                    enemySkill != null ? enemySkill.range : CreatureSkillRange.Melee,
                     enemyCreatureData == null || enemyCreatureData.idleFramesFaceRight,
                     enemyCreatureData == null || enemyCreatureData.attackFramesFaceRight,
                     enemyCreatureData != null ? enemyCreatureData.speed : BaselineSpeed,
                     maxHealth,
-                    attackPower);
+                    attackPower,
+                    enemyOrbitSkill != null ? enemyOrbitSkill.orbitEffectScaleMultiplier : 1f,
+                    enemyOrbitSkill != null ? enemyOrbitSkill.orbitHitEffectSize : OrbitHitEffectSize,
+                    enemyOrbitSkill != null ? enemyOrbitSkill.orbitOrbFrames : null,
+                    enemyOrbitSkill != null ? enemyOrbitSkill.orbitOrbCount : 0,
+                    enemyOrbitSkill != null ? enemyOrbitSkill.orbitOrbSize : DefaultOrbitOrbSize,
+                    enemyOrbitSkill != null ? enemyOrbitSkill.orbitOrbRadius : DefaultOrbitOrbRadius,
+                    enemyOrbitSkill != null ? enemyOrbitSkill.orbitOrbSpeedDegrees : DefaultOrbitOrbSpeedDegrees,
+                    enemyOrbitSkill != null ? enemyOrbitSkill.orbitOrbHitRadius : DefaultOrbitOrbHitRadius,
+                    enemyOrbitSkill != null ? enemyOrbitSkill.orbitOrbHitCooldown : DefaultOrbitOrbHitCooldown,
+                    enemyOrbitSkill != null ? enemyOrbitSkill.orbitOrbDamageMultiplier : 0f);
                 enemyCombatants.Add(combatant);
             }
         }
@@ -299,10 +322,11 @@ namespace SpiritHatchers.UI
                         ? creatureDatabase.GetCreatureById(selectedCreature.creatureId)
                         : null;
                     CreatureFormData form = GetCreatureForm(staticData, selectedCreature);
-                    Sprite[] attackFrames = GetFormOverrideFrames(form != null ? form.attackFrames : null, staticData != null ? staticData.attackFrames : null);
+                    CreatureSkillData activeSkill = staticData != null ? staticData.GetActiveSkill(form) : null;
+                    CreatureSkillData orbitSkill = staticData != null ? staticData.GetActiveOrbitSkill(form) : null;
                     string creatureName = staticData != null ? staticData.creatureName : selectedCreature.creatureId;
                     int maxHealth = Mathf.Max(1, staticData != null ? staticData.basePower * 3 + selectedCreature.level * 5 : 30);
-                    int attackPower = Mathf.Max(1, Mathf.RoundToInt((staticData != null ? staticData.basePower : 10) * (staticData != null ? staticData.skillPowerMultiplier : 1f)));
+                    int attackPower = Mathf.Max(1, Mathf.RoundToInt((staticData != null ? staticData.basePower : 10) * (activeSkill != null ? Mathf.Max(0.1f, activeSkill.powerMultiplier) : 1f)));
 
                     CombatantView combatant = CreateCombatant(
                         playerRoot,
@@ -314,17 +338,30 @@ namespace SpiritHatchers.UI
                         form != null ? form.displayScale : 1f,
                         form != null ? form.battleVisualOffset : Vector2.zero,
                         form != null ? form.idleFrames : null,
-                        attackFrames,
-                        staticData != null ? staticData.projectileFrames : null,
-                        staticData != null ? staticData.impactFrames : null,
-                        form != null ? form.orbitEffectFrames : null,
-                        form != null ? form.orbitHitEffectFrames : null,
-                        staticData != null ? staticData.skillRange : CreatureSkillRange.Melee,
+                        activeSkill != null ? activeSkill.attackFrames : null,
+                        activeSkill != null ? activeSkill.projectileFrames : null,
+                        activeSkill != null ? activeSkill.impactFrames : null,
+                        form != null ? form.ultimateSkill : null,
+                        form != null ? form.ultimateRageRequired : 100f,
+                        form != null ? form.ultimateImpactEffectSize : 360f,
+                        orbitSkill != null ? orbitSkill.orbitEffectFrames : null,
+                        orbitSkill != null ? orbitSkill.orbitHitEffectFrames : null,
+                        activeSkill != null ? activeSkill.range : CreatureSkillRange.Melee,
                         staticData == null || staticData.idleFramesFaceRight,
                         staticData == null || staticData.attackFramesFaceRight,
                         staticData != null ? staticData.speed : BaselineSpeed,
                         maxHealth,
-                        attackPower);
+                        attackPower,
+                        orbitSkill != null ? orbitSkill.orbitEffectScaleMultiplier : 1f,
+                        orbitSkill != null ? orbitSkill.orbitHitEffectSize : OrbitHitEffectSize,
+                        orbitSkill != null ? orbitSkill.orbitOrbFrames : null,
+                        orbitSkill != null ? orbitSkill.orbitOrbCount : 0,
+                        orbitSkill != null ? orbitSkill.orbitOrbSize : DefaultOrbitOrbSize,
+                        orbitSkill != null ? orbitSkill.orbitOrbRadius : DefaultOrbitOrbRadius,
+                        orbitSkill != null ? orbitSkill.orbitOrbSpeedDegrees : DefaultOrbitOrbSpeedDegrees,
+                        orbitSkill != null ? orbitSkill.orbitOrbHitRadius : DefaultOrbitOrbHitRadius,
+                        orbitSkill != null ? orbitSkill.orbitOrbHitCooldown : DefaultOrbitOrbHitCooldown,
+                        orbitSkill != null ? orbitSkill.orbitOrbDamageMultiplier : 0f);
                     playerCombatants.Add(combatant);
                     continue;
                 }
@@ -366,6 +403,9 @@ namespace SpiritHatchers.UI
             Sprite[] attackFrames = null,
             Sprite[] projectileFrames = null,
             Sprite[] impactFrames = null,
+            CreatureSkillData ultimateSkill = null,
+            float ultimateRageRequired = 100f,
+            float ultimateImpactEffectSize = 360f,
             Sprite[] orbitEffectFrames = null,
             Sprite[] orbitHitEffectFrames = null,
             CreatureSkillRange skillRange = CreatureSkillRange.Melee,
@@ -373,7 +413,17 @@ namespace SpiritHatchers.UI
             bool attackFramesFaceRight = true,
             float speed = BaselineSpeed,
             int maxHealth = 1,
-            int attackPower = 1)
+            int attackPower = 1,
+            float orbitEffectScaleMultiplier = 1f,
+            float orbitHitEffectSize = OrbitHitEffectSize,
+            Sprite[] orbitOrbFrames = null,
+            int orbitOrbCount = 0,
+            float orbitOrbSize = DefaultOrbitOrbSize,
+            float orbitOrbRadius = DefaultOrbitOrbRadius,
+            float orbitOrbSpeedDegrees = DefaultOrbitOrbSpeedDegrees,
+            float orbitOrbHitRadius = DefaultOrbitOrbHitRadius,
+            float orbitOrbHitCooldown = DefaultOrbitOrbHitCooldown,
+            float orbitOrbDamageMultiplier = 0f)
         {
             GameObject root = new GameObject(labelText, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             root.transform.SetParent(parent, false);
@@ -391,7 +441,7 @@ namespace SpiritHatchers.UI
             GameObject visualRootObject = new GameObject("VisualRoot", typeof(RectTransform));
             visualRootObject.transform.SetParent(root.transform, false);
             RectTransform visualRoot = visualRootObject.GetComponent<RectTransform>();
-            SetAnchored(visualRoot, new Vector2(0f, 0.12f), new Vector2(1f, 1f), visualOffset, Vector2.zero);
+            SetAnchored(visualRoot, new Vector2(0f, 0.24f), new Vector2(1f, 1f), visualOffset, Vector2.zero);
 
             Image spriteImage = CreateImage(visualRoot, "Sprite", fallbackColor);
             StretchFull(spriteImage.rectTransform);
@@ -404,14 +454,15 @@ namespace SpiritHatchers.UI
             CreatureSpriteAnimationUI animation = spriteImage.gameObject.AddComponent<CreatureSpriteAnimationUI>();
             animation.Play(idleFrames, sprite);
 
+            bool useRuntimeOrbitOrbs = orbitOrbFrames != null && orbitOrbFrames.Length > 0 && orbitOrbCount > 0;
             Image orbitEffectImage = null;
             CreatureSpriteAnimationUI orbitEffectAnimation = null;
-            if (orbitEffectFrames != null && orbitEffectFrames.Length > 0)
+            if (!useRuntimeOrbitOrbs && orbitEffectFrames != null && orbitEffectFrames.Length > 0)
             {
                 orbitEffectImage = CreateImage(visualRoot, "OrbitEffect", Color.white);
                 StretchFull(orbitEffectImage.rectTransform);
                 orbitEffectImage.rectTransform.anchoredPosition = Vector2.zero;
-                float orbitScale = spriteScale * OrbitEffectScale;
+                float orbitScale = spriteScale * OrbitEffectScale * Mathf.Max(0.1f, orbitEffectScaleMultiplier);
                 orbitEffectImage.rectTransform.localScale = new Vector3(orbitScale, orbitScale, 1f);
                 orbitEffectImage.preserveAspect = true;
                 orbitEffectImage.raycastTarget = false;
@@ -422,7 +473,8 @@ namespace SpiritHatchers.UI
             }
 
             TMP_Text label = CreateText(root.transform, "Name", labelText, 13f, TextAlignmentOptions.Center);
-            SetAnchored(label.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.18f), Vector2.zero, Vector2.zero);
+            label.fontSize = 12f;
+            SetAnchored(label.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.28f), Vector2.zero, Vector2.zero);
 
             CombatantView combatant = new CombatantView
             {
@@ -438,6 +490,9 @@ namespace SpiritHatchers.UI
                 attackFrames = attackFrames,
                 projectileFrames = projectileFrames,
                 impactFrames = impactFrames,
+                ultimateSkill = HasSkillVisuals(ultimateSkill) ? ultimateSkill : null,
+                ultimateRageRequired = Mathf.Max(1f, ultimateRageRequired),
+                ultimateImpactEffectSize = Mathf.Max(1f, ultimateImpactEffectSize),
                 orbitEffectFrames = orbitEffectFrames,
                 orbitHitEffectFrames = orbitHitEffectFrames,
                 fallbackSprite = sprite,
@@ -450,11 +505,96 @@ namespace SpiritHatchers.UI
                 maxHealth = Mathf.Max(1, maxHealth),
                 currentHealth = Mathf.Max(1, maxHealth),
                 attackPower = Mathf.Max(1, attackPower),
+                orbitHitEffectSize = Mathf.Max(1f, orbitHitEffectSize),
+                orbitOrbFrames = orbitOrbFrames,
+                orbitOrbHitRadius = Mathf.Max(1f, orbitOrbHitRadius * Mathf.Max(0.1f, displayScale)),
+                orbitOrbHitCooldown = Mathf.Max(0.05f, orbitOrbHitCooldown),
+                orbitOrbDamageMultiplier = Mathf.Max(0f, orbitOrbDamageMultiplier),
                 attackTimer = 0f
             };
+            CreateOrbitOrbs(combatant, Mathf.Max(0, orbitOrbCount), orbitOrbSize, orbitOrbRadius, orbitOrbSpeedDegrees);
+            ConfigureDebugUltimateClick(root, combatant);
             UpdateCombatantLabel(combatant);
             SetCombatantDefaultFacing(combatant);
             return combatant;
+        }
+
+        private void ConfigureDebugUltimateClick(GameObject root, CombatantView combatant)
+        {
+            if (!debugClickUltimate || root == null || combatant == null || !combatant.HasUltimate)
+            {
+                return;
+            }
+
+            Button button = root.GetComponent<Button>();
+            if (button == null)
+            {
+                button = root.AddComponent<Button>();
+            }
+
+            button.transition = Selectable.Transition.None;
+            button.onClick.AddListener(() => TryTriggerDebugUltimate(combatant));
+        }
+
+        private void TryTriggerDebugUltimate(CombatantView combatant)
+        {
+            if (!debugClickUltimate || combatant == null || !combatant.IsAlive || combatant.isAttacking || !combatant.HasUltimate)
+            {
+                return;
+            }
+
+            List<CombatantView> defenders = combatant.isEnemy ? playerCombatants : enemyCombatants;
+            if (GetFirstLivingCombatant(defenders) == null)
+            {
+                return;
+            }
+
+            combatant.attackTimer = 0f;
+            combatant.ultimateRage = combatant.ultimateRageRequired;
+            UpdateCombatantLabel(combatant);
+            StartCoroutine(PerformUltimate(combatant, defenders));
+        }
+
+        private void CreateOrbitOrbs(CombatantView combatant, int count, float size, float radius, float speedDegrees)
+        {
+            if (combatant == null || combatant.visualRoot == null || combatant.orbitOrbFrames == null || combatant.orbitOrbFrames.Length == 0 || count <= 0)
+            {
+                return;
+            }
+
+            combatant.orbitOrbs = new List<OrbitOrbView>();
+            float formScale = Mathf.Max(0.1f, combatant.baseSpriteScale / CombatantSpriteScale);
+            float clampedSize = Mathf.Max(1f, size * formScale);
+            float clampedRadius = Mathf.Max(1f, radius * formScale);
+            float clampedSpeed = Mathf.Max(1f, speedDegrees);
+
+            for (int i = 0; i < count; i++)
+            {
+                Image orbImage = CreateImage(combatant.visualRoot, $"OrbitOrb{i + 1}", Color.white);
+                RectTransform orbRect = orbImage.rectTransform;
+                orbRect.anchorMin = new Vector2(0.5f, 0.5f);
+                orbRect.anchorMax = new Vector2(0.5f, 0.5f);
+                orbRect.pivot = new Vector2(0.5f, 0.5f);
+                orbRect.sizeDelta = new Vector2(clampedSize, clampedSize);
+                orbRect.localScale = Vector3.one;
+                orbImage.preserveAspect = true;
+                orbImage.raycastTarget = false;
+                orbImage.transform.SetAsLastSibling();
+
+                CreatureSpriteAnimationUI orbAnimation = orbImage.gameObject.AddComponent<CreatureSpriteAnimationUI>();
+                orbAnimation.Play(combatant.orbitOrbFrames, null);
+
+                combatant.orbitOrbs.Add(new OrbitOrbView
+                {
+                    image = orbImage,
+                    rectTransform = orbRect,
+                    animation = orbAnimation,
+                    angleDegrees = i * 360f / count,
+                    radius = clampedRadius,
+                    speedDegrees = clampedSpeed,
+                    hitCooldownRemaining = 0f
+                });
+            }
         }
 
         private CreatureFormData GetCreatureForm(CreatureStaticData staticData, PlayerCreatureData creature)
@@ -520,10 +660,82 @@ namespace SpiritHatchers.UI
         {
             while (true)
             {
+                UpdateOrbitOrbs(playerCombatants, enemyCombatants);
+                UpdateOrbitOrbs(enemyCombatants, playerCombatants);
                 TickCombatants(playerCombatants, enemyCombatants);
                 TickCombatants(enemyCombatants, playerCombatants);
                 yield return null;
             }
+        }
+
+        private void UpdateOrbitOrbs(List<CombatantView> owners, List<CombatantView> defenders)
+        {
+            for (int i = 0; i < owners.Count; i++)
+            {
+                CombatantView owner = owners[i];
+                if (owner == null || !owner.IsAlive || owner.orbitOrbs == null)
+                {
+                    continue;
+                }
+
+                for (int orbIndex = 0; orbIndex < owner.orbitOrbs.Count; orbIndex++)
+                {
+                    OrbitOrbView orb = owner.orbitOrbs[orbIndex];
+                    if (orb == null || orb.rectTransform == null)
+                    {
+                        continue;
+                    }
+
+                    orb.angleDegrees = Mathf.Repeat(orb.angleDegrees + orb.speedDegrees * Time.deltaTime, 360f);
+                    float radians = orb.angleDegrees * Mathf.Deg2Rad;
+                    orb.rectTransform.anchoredPosition = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)) * orb.radius;
+                    orb.hitCooldownRemaining = Mathf.Max(0f, orb.hitCooldownRemaining - Time.deltaTime);
+
+                    if (orb.hitCooldownRemaining <= 0f && TryHitOrbitOrbTarget(owner, orb, defenders))
+                    {
+                        orb.hitCooldownRemaining = owner.orbitOrbHitCooldown;
+                    }
+                }
+            }
+        }
+
+        private bool TryHitOrbitOrbTarget(CombatantView owner, OrbitOrbView orb, List<CombatantView> defenders)
+        {
+            if (owner == null || orb == null || orb.rectTransform == null || defenders == null)
+            {
+                return false;
+            }
+
+            Vector3 orbWorldPosition = orb.rectTransform.TransformPoint(orb.rectTransform.rect.center);
+            float hitRadius = Mathf.Max(1f, owner.orbitOrbHitRadius);
+
+            for (int i = 0; i < defenders.Count; i++)
+            {
+                CombatantView defender = defenders[i];
+                if (defender == null || !defender.IsAlive || defender.spriteImage == null)
+                {
+                    continue;
+                }
+
+                Vector3 targetWorldPosition = GetSpriteWorldCenter(defender.spriteImage.rectTransform);
+                if (Vector3.Distance(orbWorldPosition, targetWorldPosition) > hitRadius)
+                {
+                    continue;
+                }
+
+                int orbitDamage = Mathf.RoundToInt(owner.attackPower * owner.orbitOrbDamageMultiplier);
+                if (orbitDamage > 0)
+                {
+                    ApplyDamage(defender, orbitDamage);
+                    ChargeUltimate(owner, UltimateRageGainOnAttack * 0.4f);
+                    ChargeUltimate(defender, UltimateRageGainWhenHit * 0.4f);
+                }
+
+                PlayOrbitHitEffect(owner, defender);
+                return true;
+            }
+
+            return false;
         }
 
         private void TickCombatants(List<CombatantView> attackers, List<CombatantView> defenders)
@@ -550,8 +762,51 @@ namespace SpiritHatchers.UI
                 }
 
                 attacker.attackTimer = 0f;
-                StartCoroutine(PerformAttack(attacker, target));
+                if (attacker.CanUseUltimate)
+                {
+                    StartCoroutine(PerformUltimate(attacker, defenders));
+                }
+                else
+                {
+                    StartCoroutine(PerformAttack(attacker, target));
+                }
             }
+        }
+
+        private IEnumerator PerformUltimate(CombatantView attacker, List<CombatantView> defenders)
+        {
+            CombatantView target = GetFirstLivingCombatant(defenders);
+            if (attacker == null || target == null || attacker.ultimateSkill == null)
+            {
+                yield break;
+            }
+
+            attacker.isAttacking = true;
+            attacker.ultimateRage = 0f;
+            UpdateCombatantLabel(attacker);
+            SetCombatantAttackFacing(attacker);
+
+            yield return PlayCombatantFrames(attacker, attacker.ultimateSkill.attackFrames, UltimateFrameDuration, 0.18f);
+            yield return PlayEffectFramesAtWorldPosition(
+                GetTeamEffectWorldCenter(target),
+                attacker.ultimateSkill.impactFrames,
+                attacker.ultimateImpactEffectSize,
+                UltimateFrameDuration);
+
+            int damage = Mathf.Max(1, Mathf.RoundToInt(attacker.attackPower * Mathf.Max(0.1f, attacker.ultimateSkill.powerMultiplier)));
+            for (int i = 0; defenders != null && i < defenders.Count; i++)
+            {
+                CombatantView defender = defenders[i];
+                if (defender != null && defender.IsAlive)
+                {
+                    ApplyDamage(defender, damage);
+                    ChargeUltimate(defender, UltimateRageGainWhenHit);
+                }
+            }
+
+            attacker.animation.Play(attacker.idleFrames, attacker.fallbackSprite);
+            SetCombatantDefaultFacing(attacker);
+            attacker.isAttacking = false;
         }
 
         private IEnumerator PerformAttack(CombatantView attacker, CombatantView target)
@@ -577,8 +832,13 @@ namespace SpiritHatchers.UI
 
                 yield return PlayAttackFrames(attacker);
                 ApplyDamage(target, attacker.attackPower);
+                ChargeUltimate(attacker, UltimateRageGainOnAttack);
+                ChargeUltimate(target, UltimateRageGainWhenHit);
                 yield return PlayImpactFrames(attacker, target);
-                PlayOrbitHitEffect(attacker, target);
+                if (!attacker.HasRuntimeOrbitOrbs)
+                {
+                    PlayOrbitHitEffect(attacker, target);
+                }
             }
             else
             {
@@ -586,8 +846,13 @@ namespace SpiritHatchers.UI
                 yield return PlayAttackFrames(attacker);
                 yield return PlayProjectileFrames(attacker, target);
                 ApplyDamage(target, attacker.attackPower);
+                ChargeUltimate(attacker, UltimateRageGainOnAttack);
+                ChargeUltimate(target, UltimateRageGainWhenHit);
                 yield return PlayImpactFrames(attacker, target);
-                PlayOrbitHitEffect(attacker, target);
+                if (!attacker.HasRuntimeOrbitOrbs)
+                {
+                    PlayOrbitHitEffect(attacker, target);
+                }
             }
 
             attacker.animation.Play(attacker.idleFrames, attacker.fallbackSprite);
@@ -721,20 +986,24 @@ namespace SpiritHatchers.UI
 
         private IEnumerator PlayAttackFrames(CombatantView attacker)
         {
-            if (attacker.attackFrames == null || attacker.attackFrames.Length == 0)
+            yield return PlayCombatantFrames(attacker, attacker != null ? attacker.attackFrames : null, 0.045f, 0.16f);
+        }
+
+        private IEnumerator PlayCombatantFrames(CombatantView attacker, Sprite[] frames, float frameDuration, float fallbackDelay)
+        {
+            if (attacker == null || frames == null || frames.Length == 0)
             {
-                yield return new WaitForSeconds(0.16f);
+                yield return new WaitForSeconds(fallbackDelay);
                 yield break;
             }
 
             attacker.animation.Stop(attacker.fallbackSprite);
-            float frameDuration = 0.045f;
 
-            for (int i = 0; i < attacker.attackFrames.Length; i++)
+            for (int i = 0; i < frames.Length; i++)
             {
-                if (attacker.attackFrames[i] != null)
+                if (frames[i] != null)
                 {
-                    attacker.spriteImage.sprite = attacker.attackFrames[i];
+                    attacker.spriteImage.sprite = frames[i];
                     attacker.spriteImage.enabled = true;
                 }
 
@@ -744,7 +1013,22 @@ namespace SpiritHatchers.UI
 
         private IEnumerator PlayImpactFrames(CombatantView attacker, CombatantView target)
         {
-            if (attacker == null || attacker.impactFrames == null || attacker.impactFrames.Length == 0 || target == null || target.spriteImage == null)
+            yield return PlayEffectFrames(target, attacker != null ? attacker.impactFrames : null, ImpactEffectSize, ImpactFrameDuration);
+        }
+
+        private IEnumerator PlayEffectFrames(CombatantView target, Sprite[] frames, float effectSize, float frameDuration)
+        {
+            if (frames == null || frames.Length == 0 || target == null || target.spriteImage == null)
+            {
+                yield break;
+            }
+
+            yield return PlayEffectFramesAtWorldPosition(GetSpriteWorldCenter(target.spriteImage.rectTransform), frames, effectSize, frameDuration);
+        }
+
+        private IEnumerator PlayEffectFramesAtWorldPosition(Vector3 worldPosition, Sprite[] frames, float effectSize, float frameDuration)
+        {
+            if (frames == null || frames.Length == 0)
             {
                 yield break;
             }
@@ -763,8 +1047,9 @@ namespace SpiritHatchers.UI
             effectRect.anchorMin = new Vector2(0.5f, 0.5f);
             effectRect.anchorMax = new Vector2(0.5f, 0.5f);
             effectRect.pivot = new Vector2(0.5f, 0.5f);
-            effectRect.localPosition = battleRect.InverseTransformPoint(GetSpriteWorldCenter(target.spriteImage.rectTransform));
-            effectRect.sizeDelta = new Vector2(ImpactEffectSize, ImpactEffectSize);
+            effectRect.localPosition = battleRect.InverseTransformPoint(worldPosition);
+            float clampedEffectSize = Mathf.Max(1f, effectSize);
+            effectRect.sizeDelta = new Vector2(clampedEffectSize, clampedEffectSize);
             effectRect.localScale = Vector3.one;
 
             Image effectImage = effectRoot.GetComponent<Image>();
@@ -772,22 +1057,38 @@ namespace SpiritHatchers.UI
             effectImage.preserveAspect = true;
             effectImage.raycastTarget = false;
 
-            for (int i = 0; i < attacker.impactFrames.Length; i++)
+            for (int i = 0; i < frames.Length; i++)
             {
                 if (effectImage == null)
                 {
                     yield break;
                 }
 
-                effectImage.sprite = attacker.impactFrames[i];
-                effectImage.enabled = attacker.impactFrames[i] != null;
-                yield return new WaitForSeconds(ImpactFrameDuration);
+                effectImage.sprite = frames[i];
+                effectImage.enabled = frames[i] != null;
+                yield return new WaitForSeconds(frameDuration);
             }
 
             if (effectRoot != null)
             {
                 Destroy(effectRoot);
             }
+        }
+
+        private Vector3 GetTeamEffectWorldCenter(CombatantView target)
+        {
+            if (target == null)
+            {
+                return Vector3.zero;
+            }
+
+            RectTransform teamRoot = target.isEnemy ? enemyRoot as RectTransform : playerRoot as RectTransform;
+            if (teamRoot != null)
+            {
+                return teamRoot.TransformPoint(teamRoot.rect.center);
+            }
+
+            return GetCombatantWorldCenter(target);
         }
 
         private void PlayOrbitHitEffect(CombatantView attacker, CombatantView target)
@@ -816,9 +1117,10 @@ namespace SpiritHatchers.UI
             effectRect.anchorMin = new Vector2(0.5f, 0.5f);
             effectRect.anchorMax = new Vector2(0.5f, 0.5f);
             effectRect.pivot = new Vector2(0.5f, 0.5f);
-            Vector3 targetCenter = GetSpriteWorldCenter(target.spriteImage.rectTransform);
+            Vector3 targetCenter = GetCombatantWorldCenter(target);
             effectRect.localPosition = battleRect.InverseTransformPoint(targetCenter);
-            effectRect.sizeDelta = new Vector2(OrbitHitEffectSize, OrbitHitEffectSize);
+            float hitEffectSize = Mathf.Max(1f, attacker.orbitHitEffectSize);
+            effectRect.sizeDelta = new Vector2(hitEffectSize, hitEffectSize);
             effectRect.localScale = Vector3.one;
 
             Image effectImage = effectRoot.GetComponent<Image>();
@@ -951,6 +1253,16 @@ namespace SpiritHatchers.UI
                 {
                     target.orbitEffectImage.color = new Color(1f, 1f, 1f, 0.28f);
                 }
+                if (target.orbitOrbs != null)
+                {
+                    for (int i = 0; i < target.orbitOrbs.Count; i++)
+                    {
+                        if (target.orbitOrbs[i] != null && target.orbitOrbs[i].image != null)
+                        {
+                            target.orbitOrbs[i].image.color = new Color(1f, 1f, 1f, 0.28f);
+                        }
+                    }
+                }
                 target.animation.Stop(target.fallbackSprite);
             }
         }
@@ -981,6 +1293,29 @@ namespace SpiritHatchers.UI
             return Mathf.Clamp(BaseAttackIntervalSeconds * BaselineSpeed / Mathf.Max(1f, speed), 0.35f, 6f);
         }
 
+        private static bool HasSkillVisuals(CreatureSkillData skill)
+        {
+            if (skill == null)
+            {
+                return false;
+            }
+
+            bool hasAttack = skill.attackFrames != null && skill.attackFrames.Length > 0;
+            bool hasImpact = skill.impactFrames != null && skill.impactFrames.Length > 0;
+            return hasAttack || hasImpact;
+        }
+
+        private void ChargeUltimate(CombatantView combatant, float amount)
+        {
+            if (combatant == null || !combatant.HasUltimate || amount <= 0f)
+            {
+                return;
+            }
+
+            combatant.ultimateRage = Mathf.Min(combatant.ultimateRageRequired, combatant.ultimateRage + amount);
+            UpdateCombatantLabel(combatant);
+        }
+
         private void UpdateCombatantLabel(CombatantView combatant)
         {
             if (combatant == null || combatant.nameLabel == null)
@@ -988,7 +1323,10 @@ namespace SpiritHatchers.UI
                 return;
             }
 
-            combatant.nameLabel.text = $"{combatant.displayName}\nHP {combatant.currentHealth}/{combatant.maxHealth}";
+            string rageLine = combatant.HasUltimate
+                ? $"\nRage {Mathf.RoundToInt(combatant.ultimateRage / combatant.ultimateRageRequired * 100f)}%"
+                : string.Empty;
+            combatant.nameLabel.text = $"{combatant.displayName}\nHP {combatant.currentHealth}/{combatant.maxHealth}{rageLine}";
         }
 
         private Color GetElementColor(CreatureElement element)
@@ -1084,8 +1422,14 @@ namespace SpiritHatchers.UI
             public Sprite[] attackFrames;
             public Sprite[] projectileFrames;
             public Sprite[] impactFrames;
+            public CreatureSkillData ultimateSkill;
+            public float ultimateRage;
+            public float ultimateRageRequired;
+            public float ultimateImpactEffectSize;
             public Sprite[] orbitEffectFrames;
             public Sprite[] orbitHitEffectFrames;
+            public Sprite[] orbitOrbFrames;
+            public List<OrbitOrbView> orbitOrbs;
             public Sprite fallbackSprite;
             public bool isEnemy;
             public float baseSpriteScale;
@@ -1096,6 +1440,10 @@ namespace SpiritHatchers.UI
             public int maxHealth;
             public int currentHealth;
             public int attackPower;
+            public float orbitHitEffectSize;
+            public float orbitOrbHitRadius;
+            public float orbitOrbHitCooldown;
+            public float orbitOrbDamageMultiplier;
             public float attackTimer;
             public bool isAttacking;
             public bool hasMeleeContactPosition;
@@ -1104,6 +1452,20 @@ namespace SpiritHatchers.UI
 
             public bool IsAlive => currentHealth > 0;
             public bool HasCreatureVisual => fallbackSprite != null || (idleFrames != null && idleFrames.Length > 0);
+            public bool HasRuntimeOrbitOrbs => orbitOrbs != null && orbitOrbs.Count > 0;
+            public bool HasUltimate => ultimateSkill != null;
+            public bool CanUseUltimate => HasUltimate && ultimateRage >= ultimateRageRequired;
+        }
+
+        private class OrbitOrbView
+        {
+            public Image image;
+            public RectTransform rectTransform;
+            public CreatureSpriteAnimationUI animation;
+            public float angleDegrees;
+            public float radius;
+            public float speedDegrees;
+            public float hitCooldownRemaining;
         }
     }
 }

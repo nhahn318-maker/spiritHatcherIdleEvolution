@@ -6,10 +6,10 @@ Use this image as the main visual reference:
 
 Assets/_Project/References/style_reference_home_screen.png
 
-The game should follow the same overall feeling:
+Use it for the overall feeling, not as a strict creature rendering lock:
 
-- Cute fantasy mobile game
-- Chibi creature collection style
+- Fantasy mobile creature collection
+- Expressive collectible creatures
 - Cozy magical forest setting
 - Bright and colorful UI
 - Large readable buttons
@@ -25,8 +25,8 @@ The game should look like a polished casual mobile creature collection game.
 
 Keywords:
 
-- cute fantasy
-- chibi creature
+- fantasy creature collection
+- expressive creatures
 - magical forest
 - soft glow
 - colorful mobile UI
@@ -39,11 +39,10 @@ Keywords:
 
 Creature sprites should be:
 
-- 2D chibi fantasy
-- Cute and collectible
-- Big expressive eyes
+- 2D fantasy game assets
+- Collectible and expressive
 - Clean silhouette
-- Soft shading
+- Polished shading that matches the specific creature reference
 - Vibrant element-based colors
 - Centered full body
 - Transparent background
@@ -51,21 +50,23 @@ Creature sprites should be:
 - Suitable for Unity 2D
 - Generated on a flat chroma-key background first, then converted to true PNG alpha
 
+Creature sprites may vary by evolution form. A baby form can be cute and rounded, while an evolved form can be sharper, taller, more elegant, or more detailed. Preserve the creature's own reference image when one exists.
+
 Creature battle animation sheets should also follow a shared ground baseline:
 
 - Creatures may have different visible heights and widths.
 - Do not force every creature to be the same size.
-- For 384x512 animation cells, the lowest feet/root/contact point should sit around `y = 472-474` from the top of the cell.
+- For current Ember Fox family sheets, the visible project baseline is around `y = 376` from the top of each 384x512 cell.
 - Keep that feet/root/contact point stable across every frame of the same animation.
 - Do not visually center a creature in a way that makes it float above or sink below the shared battle ground line.
+- If old docs, generated tools, or image prompts mention `y = 472-474`, do not use that for the current Ember Fox-style sheets; it will make the creature appear too low compared with existing `idle.png` and `flame_idle.png`.
 
 Creature sprites should not be:
 
-- Realistic
+- Photorealistic unless explicitly requested
 - Horror
-- Too detailed
+- Needlessly noisy or unreadable at mobile size
 - Dark fantasy
-- Overly complex
 - Semi-transparent
 - Cropped
 - With text or UI
@@ -78,6 +79,7 @@ Sprite generation note:
 - Use `#ff00ff` chroma-key for green or nature creatures.
 - Use `#00ff00` chroma-key for non-green creatures.
 - Always validate the final imported sprite has real alpha, not an RGB image with a checkerboard background.
+- For 3072x512 animation sheets, set Texture Importer Max Size to at least `4096` so Unity does not downscale the sheet.
 - Use short final filenames in creature folders, such as `form.png`, `idle.png`, `attack.png`, `attack_seed_spit.png`, `flame.png`, and `flame_idle.png`.
 - Do not keep `raw`, `transparent`, `padded`, or generated hash filenames in final creature folders unless Unity references them.
 - When renaming a Unity-referenced image, move the `.png` and `.png.meta` together so the GUID remains stable.

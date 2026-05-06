@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a0eb08b593c118944b5524eac9bffc99
+guid: 73ceade46f2b4c02a5bd65cee6237cc2
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -59,7 +59,7 @@ TextureImporter:
   singleChannelComponent: 0
   flipbookRows: 1
   flipbookColumns: 1
-  maxTextureSizeSet: 0
+  maxTextureSizeSet: 1
   compressionQualitySet: 0
   textureFormatSet: 0
   ignorePngGamma: 0
@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_0
+      name: inferno_nova_cast_0
       rect:
         serializedVersion: 2
         x: 0
@@ -111,14 +111,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 204fbe855208afe44b224b4db83e6b91
-      internalID: -246590640
+      spriteID: ba4f9f59671849b4bce72cf9d0a2c303
+      internalID: 596827183
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_1
+      name: inferno_nova_cast_1
       rect:
         serializedVersion: 2
         x: 384
@@ -132,14 +132,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fb553755e2b703e4c95a01b058590165
-      internalID: 565360164
+      spriteID: 2da5feee880843a18455770834c89482
+      internalID: 999864494
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_2
+      name: inferno_nova_cast_2
       rect:
         serializedVersion: 2
         x: 768
@@ -153,14 +153,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: df0bc1bf7c547d545b4bccaff0ee9117
-      internalID: -89462376
+      spriteID: 36c10bf3f9394b56ab8d14d8a0103855
+      internalID: 743061843
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_3
+      name: inferno_nova_cast_3
       rect:
         serializedVersion: 2
         x: 1152
@@ -174,14 +174,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 13c31f9d46356364289265ca9fcbe2d7
-      internalID: -1599070110
+      spriteID: 437292b621974896920934e4bde82d84
+      internalID: 1191224258
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_4
+      name: inferno_nova_cast_4
       rect:
         serializedVersion: 2
         x: 1536
@@ -195,14 +195,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6eb2706366f230f45a16897572c344f6
-      internalID: 975510926
+      spriteID: 9c7f243203444e7888eaed51e988a6f1
+      internalID: 1565398659
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_5
+      name: inferno_nova_cast_5
       rect:
         serializedVersion: 2
         x: 1920
@@ -216,14 +216,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b686863d5ff75324689c92ec3b6c6e0a
-      internalID: 1273995639
+      spriteID: 54170faa9b674370b62c55649f862229
+      internalID: 894774453
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_6
+      name: inferno_nova_cast_6
       rect:
         serializedVersion: 2
         x: 2304
@@ -237,14 +237,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 60093c61c9aaeab47a4a9477f6309aad
-      internalID: 142962502
+      spriteID: 1f2a17d4095840e19111d6603f6ee27f
+      internalID: 1170624029
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: inferno_fox_idle_reference_padded_384x512_7
+      name: inferno_nova_cast_7
       rect:
         serializedVersion: 2
         x: 2688
@@ -258,8 +258,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2abca22da4146f04f9001e0e0a8c3abb
-      internalID: -391603133
+      spriteID: 0595d694da354f3fb588a3b6e82aeb9d
+      internalID: 2046897336
       vertices: []
       indices: 
       edges: []
@@ -275,14 +275,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      inferno_fox_idle_reference_padded_384x512_0: -246590640
-      inferno_fox_idle_reference_padded_384x512_1: 565360164
-      inferno_fox_idle_reference_padded_384x512_2: -89462376
-      inferno_fox_idle_reference_padded_384x512_3: -1599070110
-      inferno_fox_idle_reference_padded_384x512_4: 975510926
-      inferno_fox_idle_reference_padded_384x512_5: 1273995639
-      inferno_fox_idle_reference_padded_384x512_6: 142962502
-      inferno_fox_idle_reference_padded_384x512_7: -391603133
+      inferno_nova_cast_0: 596827183
+      inferno_nova_cast_1: 999864494
+      inferno_nova_cast_2: 743061843
+      inferno_nova_cast_3: 1191224258
+      inferno_nova_cast_4: 1565398659
+      inferno_nova_cast_5: 894774453
+      inferno_nova_cast_6: 1170624029
+      inferno_nova_cast_7: 2046897336
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

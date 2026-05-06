@@ -18,6 +18,14 @@ Creature image names:
 - `[form]_idle.png` - evolution form idle sheet, for example `flame_idle.png`, `inferno_idle.png`.
 - `idle_legacy.png` - only when an old scene still references an older idle sheet. Remove after references are migrated.
 
+Minimum creature form assets:
+
+- Static display sprite: `1024x1024` PNG with real alpha.
+- Idle sheet: `3072x512` PNG with real alpha, 8 frames, 384x512 per frame.
+- Attack or skill sheets: same `3072x512` / 8-frame layout unless a feature explicitly needs a different format.
+- Current battle baseline for Ember Fox-style 384x512 sheets: lowest visible feet/root/contact pixel around `y = 376`.
+- Keep `.png.meta` when replacing an existing Unity-referenced image so ScriptableObject sprite references stay stable.
+
 Skill/effect folder pattern:
 
 - `Assets/_Project/Art/Skills/[Element]/`
