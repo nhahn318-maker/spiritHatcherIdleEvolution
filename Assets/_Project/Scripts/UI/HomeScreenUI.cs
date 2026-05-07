@@ -126,8 +126,6 @@ namespace SpiritHatchers.UI
                 dailyRewardBanner.SetActive(true);
             }
 
-            SetText(dailyRewardTitleText, "Daily Reward");
-            SetText(dailyRewardBodyText, "Claim your free rewards!");
             SetText(hatchButtonText, "Hatch");
             SetText(collectionButtonText, "Collection");
             SetText(expeditionButtonText, "Expedition");

@@ -57,19 +57,12 @@ namespace SpiritHatchers.DailyReward
         {
             FindManagerIfNeeded();
 
-            SetText(titleText, "Daily Reward");
-            SetText(bodyText, "1 Egg Ticket  +  100 Coin  +  50 Food");
-
             if (dailyRewardManager == null)
             {
-                SetText(buttonText, "Unavailable");
-                SetButtonInteractable(false);
                 return;
             }
 
-            bool canClaim = dailyRewardManager.CanClaim();
-            SetText(buttonText, dailyRewardManager.GetStatusText());
-            SetButtonInteractable(canClaim);
+            SetButtonInteractable(true);
         }
 
         private void OnClaimClicked()
